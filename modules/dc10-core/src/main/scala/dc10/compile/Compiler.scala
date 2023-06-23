@@ -33,9 +33,9 @@ object Compiler:
   extension [F[_]: FlatMap, A] (res: F[List[A]])
     def toVirtualFile[V](
       using
-        C: Compiler[ResultF, V, A],
+        C: Compiler[F, V, A],
         D: LangConfig[V]
     ): F[List[VirtualFile]] =
-      res.flatMap(r => C.toVirtualFile(r, D))
+      FlatMap[F].flatMap(res)(r => C.toVirtualFile(r, D))
 
       
