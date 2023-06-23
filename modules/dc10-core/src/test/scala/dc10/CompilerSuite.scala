@@ -2,7 +2,7 @@ package dc10
 
 import dc10.compile.Compiler
 import dc10.schema.{CaseClass, File, Type, Value}
-import dc10.schema.define.{FileDef, CaseClassDef, Statement, ValDef}
+import dc10.schema.define.{CaseClassDef, FileDef, Statement, ValDef}
 import java.nio.file.Path
 import munit.FunSuite
 

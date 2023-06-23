@@ -1,5 +1,6 @@
 package dc10.compile
 
+import cats.FlatMap
 import dc10.config.LangConfig
 import dc10.render.LangRenderer
 import dc10.schema.define.{FileDef, Statement}
@@ -29,12 +30,12 @@ object Compiler:
               fileDef.file.path,
               fileDef.file.contents.map(R.toString).mkString)))
 
-  extension [A] (res: Either[List[Compiler.Error], List[A]])
+  extension [F[_]: FlatMap, A] (res: F[List[A]])
     def toVirtualFile[V](
       using
         C: Compiler[ResultF, V, A],
         D: LangConfig[V]
-    ): Either[List[Compiler.Error], List[VirtualFile]] =
+    ): F[List[VirtualFile]] =
       res.flatMap(r => C.toVirtualFile(r, D))
 
       
