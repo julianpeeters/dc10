@@ -7,7 +7,7 @@ trait VirtualFile:
   def contents: String
 
 object VirtualFile:
-  def apply(p: Path, c: String): VirtualFile =
+  def apply(p: Path, s: String): VirtualFile =
     new VirtualFile:
       def path = p
-      def contents = c
+      def contents = s

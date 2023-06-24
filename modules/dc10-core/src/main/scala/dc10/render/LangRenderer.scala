@@ -4,29 +4,29 @@ import dc10.schema.{Package, Type, Value}
 import dc10.schema.define.{CaseClassDef, PackageDef, Statement, UnsafeExpr, ValDef}
 
 trait LangRenderer[V]:
-  def toString(pkg: Package): String
-  def toString(stmt: Statement): String
-  def toString(tpe: Type): String
-  def toString(value: Value): String
+  def render(pkg: Package): String
+  def render(stmt: Statement): String
+  def render(tpe: Type): String
+  def render(value: Value): String
   def version: V
   
 object LangRenderer:
   given LangRenderer["scala-3.3.0"] =
-    new LangRenderer["scala-3.3.0"]:        
-      def toString(pkg: Package): String =
+    new LangRenderer["scala-3.3.0"]:    
+      def render(pkg: Package): String =
         s"package ${pkg.getPath.toString}\n\n${pkg}"
-      def toString(stmt: Statement): String = stmt match
+      def render(stmt: Statement): String = stmt match
         case CaseClassDef(cls) =>
-          s"case class ${cls.nme}(${cls.fields.map(toString).mkString})"
+          s"case class ${cls.nme}(${cls.fields.map(render).mkString})"
         case PackageDef(pkg) =>
-          s"package ${toString(pkg)}\n\n"
+          s"package ${render(pkg)}\n\n"
         case ValDef(value) =>
-          s"val ${toString(value)}: ${toString(value.tpe)}"
+          s"val ${render(value)}: ${render(value.tpe)}"
         case UnsafeExpr(value) =>
-          toString(value)
-      def toString(tpe: Type): String =
+          render(value)
+      def render(tpe: Type): String =
         tpe.nme
-      def toString(value: Value): String =
+      def render(value: Value): String =
         value.nme
       def version: "scala-3.3.0" =
         "scala-3.3.0"

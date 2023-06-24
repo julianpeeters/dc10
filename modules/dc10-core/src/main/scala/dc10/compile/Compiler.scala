@@ -4,6 +4,7 @@ import cats.FlatMap
 import dc10.config.LangConfig
 import dc10.render.LangRenderer
 import dc10.schema.define.{FileDef, Statement}
+import dc10.schema.Value
 
 trait Compiler[F[_], V, A]:
   def toVirtualFile(res: List[A], cfg: LangConfig[V]): F[List[VirtualFile]]
@@ -28,7 +29,7 @@ object Compiler:
           res.map(fileDef =>
             VirtualFile(
               fileDef.file.path,
-              fileDef.file.contents.map(R.toString).mkString)))
+              fileDef.file.contents.map(R.render).mkString)))
 
   extension [F[_]: FlatMap, A] (res: F[List[A]])
     def toVirtualFile[V](

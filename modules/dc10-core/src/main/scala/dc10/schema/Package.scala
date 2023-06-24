@@ -6,7 +6,7 @@ import java.nio.file.Path
 sealed trait Package
 object Package:
 
-  extension (pkg: Package)
+  extension  (pkg: Package)
     def getPath: Path =
       pkg match
         case Basic(nme, nst) => Path.of(nme).resolve(nst.pkg.getPath)

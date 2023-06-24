@@ -5,6 +5,7 @@ import dc10.schema.{CaseClass, File, Type, Value}
 import dc10.schema.define.{CaseClassDef, FileDef, Statement, ValDef}
 import java.nio.file.Path
 import munit.FunSuite
+// import dc10.render.given_Inspector_Type_Value
 
 class CompilerSuite extends FunSuite:
 
@@ -20,7 +21,7 @@ class CompilerSuite extends FunSuite:
                 CaseClassDef(
                   CaseClass(
                     "Person",
-                    List(ValDef(Value("name", Type.String, None))),
+                    List(ValDef(Value("name", Type.STRING, None))),
                     List.empty
                   )
                 )

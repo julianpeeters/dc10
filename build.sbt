@@ -1,4 +1,5 @@
 val CatsV = "2.9.0"
+val Fs2V = "3.7.0"
 val MUnitV = "0.7.29"
 
 ThisBuild / description := "A simplified AST for Scala code generation."
@@ -15,7 +16,16 @@ lazy val `dc10-core` = (project in file("modules/dc10-core"))
   .settings(
     name := "dc10-core",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats"  % CatsV,
-      "org.scalameta" %% "munit" % MUnitV % Test
+      "org.typelevel" %% "cats-core" % CatsV,
+      "org.scalameta" %% "munit"     % MUnitV % Test
+    )
+  )
+
+lazy val `dc10-io` = (project in file("modules/dc10-io"))
+  .dependsOn(`dc10-core`)
+  .settings(
+    name := "dc10-io",
+    libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-io" % Fs2V
     )
   )
