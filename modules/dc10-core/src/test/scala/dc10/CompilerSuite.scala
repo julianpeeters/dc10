@@ -21,7 +21,7 @@ class CompilerSuite extends FunSuite:
                 CaseClassDef(
                   CaseClass(
                     "Person",
-                    List(ValDef(Value("name", Type.STRING, None))),
+                    List(ValDef(Value("name", Type.string, None))),
                     List.empty
                   )
                 )
