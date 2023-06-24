@@ -20,5 +20,5 @@ object Value:
   def string(s: String): Value =
     new Value:
       def nme: String = s"\"${s}\""
-      def tpe: Type = Type.STRING
+      def tpe: Type = Type.string
       def impl = None

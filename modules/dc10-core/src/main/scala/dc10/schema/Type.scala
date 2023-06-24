@@ -5,6 +5,7 @@ sealed abstract class Type:
   def impl: Option[Type]
 
 object Type:
-  case object STRING extends Type:
-    def nme: String = "String"
-    def impl = None
+  def string: Type =
+    new Type:
+      def nme: String = "String"
+      def impl = None
