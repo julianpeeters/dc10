@@ -4,6 +4,7 @@ import cats.data.StateT
 import dc10.compile.Compiler
 import dc10.schema.{CaseClass, Type, Value}
 import dc10.schema.definition.Statement
+import dc10.schema.definition.Statement.{CaseClassDef, ValDef}
 import org.tpolecat.sourcepos.SourcePos
 
 trait SchemaBuilder[F[_]]:
@@ -40,9 +41,12 @@ object SchemaBuilder:
         for
           (fs, a) <- StateT.liftF[Compiler.ErrorF, Γ, (Γ, A)](flds.runEmpty)
           c <- StateT.liftF[Compiler.ErrorF, Γ, CaseClass](CaseClass(nme, fs))
-          d <- StateT.pure[Compiler.ErrorF, Γ, Statement.CaseClassDef](Statement.CaseClassDef(c, 0)(sp))
+          d <- StateT.pure[Compiler.ErrorF, Γ, CaseClassDef](CaseClassDef(c, 0)(sp))
           _ <- StateT.modifyF[Compiler.ErrorF, Γ](ctx => ctx.ext(d))
-        yield (Type(nme, None), Value.string("hello world"))
+        yield (
+          Type(nme, None),
+          /* TODO */ Value.string("hello world")
+        )
 
       def STRING: StateT[Compiler.ErrorF, Γ, Type] =
         StateT.pure[Compiler.ErrorF, Γ, Type](Type.string)
@@ -53,7 +57,7 @@ object SchemaBuilder:
       )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, Value] =
         for
           v <- StateT.liftF[Compiler.ErrorF, Γ, Value](Value(nme, tpe.runEmptyA))
-          d <- StateT.pure[Compiler.ErrorF, Γ, Statement.ValDef](Statement.ValDef(v, 0)(sp))
+          d <- StateT.pure[Compiler.ErrorF, Γ, ValDef](ValDef(v, 0)(sp))
           _ <- StateT.modifyF[Compiler.ErrorF, Γ](ctx => ctx.ext(d))
         yield v
 
@@ -64,7 +68,7 @@ object SchemaBuilder:
       )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, Value] =
         for
           v <- StateT.liftF[Compiler.ErrorF, Γ, Value](Value(nme, tpe.runEmptyA, impl.runEmptyA))
-          d <- StateT.pure[Compiler.ErrorF, Γ, Statement.ValDef](Statement.ValDef(v, 0)(sp))
+          d <- StateT.pure[Compiler.ErrorF, Γ, ValDef](ValDef(v, 0)(sp))
           _ <- StateT.modifyF[Compiler.ErrorF, Γ](ctx => ctx.ext(d))
         yield v
 
