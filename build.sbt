@@ -34,6 +34,7 @@ lazy val `dc10-core` = (project in file("modules/dc10-core"))
     libraryDependencies ++= Seq(
       "org.tpolecat"  %% "sourcepos" % SourcePosV,
       "org.typelevel" %% "cats-core" % CatsV,
+      "org.typelevel" %% "cats-free" % CatsV,
     )
   )
 

@@ -2,46 +2,46 @@ package dc10.dsl
 
 import cats.data.StateT
 import dc10.compile.Compiler
-import dc10.schema.{CaseClass, Type, Value}
+import dc10.schema.Binding
+import dc10.schema.Binding.{CaseClass, Type, Value}
 import dc10.schema.definition.Statement
 import dc10.schema.definition.Statement.{CaseClassDef, ValDef}
 import org.tpolecat.sourcepos.SourcePos
 
 trait SchemaBuilder[F[_]]:
-  type Type
-  type Value
-  def CASECLASS[A](nme: String, flds: F[A])(using sp: SourcePos): F[(Type, Value)]
-  def STRING: F[Type]
-  def VAL(nme: String, tpe: F[Type])(using sp: SourcePos): F[Value]
-  def VAL(nme: String, tpe: F[Type], impl: F[Value])(using sp: SourcePos): F[Value]
-  given litS: Conversion[String, F[Value]]
-  given refV: Conversion[Value, F[Value]]
+  def CASECLASS[A](nme: String, flds: F[A])(using sp: SourcePos): F[(Type[String], Value[String])]
+  def BOOLEAN: F[Type[Boolean]]
+  def INT: F[Type[Int]]
+  def STRING: F[Type[String]]
+  def VAL[T](nme: String, tpe: F[Type[T]])(using sp: SourcePos): F[Value[T]]
+  def VAL[T](nme: String, tpe: F[Type[T]], impl: F[Value[T]])(using sp: SourcePos): F[Value[T]]
+  given litB: Conversion[Boolean, F[Value[Boolean]]]
+  given litS: Conversion[String, F[Value[String]]]
+  given litZ: Conversion[Int, F[Value[Int]]]
+  given refV[T]: Conversion[Value[T], F[Value[T]]]
 
 object SchemaBuilder:
 
-  type Γ = List[Statement]
+  type Γ = List[Statement[Binding]]
   
   extension (ctx: Γ)
-    def ext(s: Statement): Compiler.ErrorF[Γ] =
+    def ext(s: Statement[Binding]): Compiler.ErrorF[Γ] =
       namecheck(s).map(ctx :+ _)
-    def namecheck(s: Statement): Compiler.ErrorF[Statement] =
+    def namecheck(s: Statement[Binding]): Compiler.ErrorF[Statement[Binding]] =
       // TODO
       Right(s)
   
   def dsl: SchemaBuilder[[A] =>> StateT[Compiler.ErrorF, Γ, A]] =
     new SchemaBuilder[[A] =>> StateT[Compiler.ErrorF, Γ, A]]:
-
-      type Type = dc10.schema.Type
-
-      type Value = dc10.schema.Value
-
+      
       def CASECLASS[A](
         nme: String,
         flds: StateT[Compiler.ErrorF, Γ, A]
-      )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, (Type, Value)] =
+      )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, (Type[String], Value[String])] =
         for
           (fs, a) <- StateT.liftF[Compiler.ErrorF, Γ, (Γ, A)](flds.runEmpty)
-          c <- StateT.liftF[Compiler.ErrorF, Γ, CaseClass](CaseClass(nme, fs))
+          // TODO parameterize
+          c <- StateT.liftF[Compiler.ErrorF, Γ, CaseClass[String]](CaseClass[String](nme, fs))
           d <- StateT.pure[Compiler.ErrorF, Γ, CaseClassDef](CaseClassDef(c, 0)(sp))
           _ <- StateT.modifyF[Compiler.ErrorF, Γ](ctx => ctx.ext(d))
         yield (
@@ -49,32 +49,44 @@ object SchemaBuilder:
           /* TODO */ Value.string("hello world")
         )
 
-      def STRING: StateT[Compiler.ErrorF, Γ, Type] =
-        StateT.pure[Compiler.ErrorF, Γ, Type](Type.string)
+      def BOOLEAN: StateT[Compiler.ErrorF, Γ, Type[Boolean]] =
+        StateT.pure[Compiler.ErrorF, Γ, Type[Boolean]](Type.boolean)
 
-      def VAL(
+      def INT: StateT[Compiler.ErrorF, Γ, Type[Int]] =
+        StateT.pure[Compiler.ErrorF, Γ, Type[Int]](Type.int)
+
+      def STRING: StateT[Compiler.ErrorF, Γ, Type[String]] =
+        StateT.pure[Compiler.ErrorF, Γ, Type[String]](Type.string)
+
+      def VAL[T](
         nme: String, 
-        tpe: StateT[Compiler.ErrorF, Γ, Type], 
-      )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, Value] =
+        tpe: StateT[Compiler.ErrorF, Γ, Type[T]], 
+      )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, Value[T]] =
         for
-          v <- StateT.liftF[Compiler.ErrorF, Γ, Value](Value(nme, tpe.runEmptyA))
+          v <- StateT.liftF[Compiler.ErrorF, Γ, Value[T]](Value(nme, tpe.runEmptyA))
           d <- StateT.pure[Compiler.ErrorF, Γ, ValDef](ValDef(v, 0)(sp))
           _ <- StateT.modifyF[Compiler.ErrorF, Γ](ctx => ctx.ext(d))
         yield v
 
-      def VAL(
+      def VAL[T](
         nme: String, 
-        tpe: StateT[Compiler.ErrorF, Γ, Type], 
-        impl: StateT[Compiler.ErrorF, Γ, Value]
-      )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, Value] =
+        tpe: StateT[Compiler.ErrorF, Γ, Type[T]], 
+        impl: StateT[Compiler.ErrorF, Γ, Value[T]]
+      )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, Value[T]] =
         for
-          v <- StateT.liftF[Compiler.ErrorF, Γ, Value](Value(nme, tpe.runEmptyA, impl.runEmptyA))
+          v <- StateT.liftF[Compiler.ErrorF, Γ, Value[T]](Value[T](nme, tpe.runEmptyA, impl.runEmptyA))
           d <- StateT.pure[Compiler.ErrorF, Γ, ValDef](ValDef(v, 0)(sp))
           _ <- StateT.modifyF[Compiler.ErrorF, Γ](ctx => ctx.ext(d))
         yield v
 
-      given litS: Conversion[String, StateT[Compiler.ErrorF, Γ, Value]] =
+      given litB: Conversion[Boolean, StateT[Compiler.ErrorF, Γ, Value[Boolean]]] =
+        b => StateT.pure(Value.boolean(b))
+
+      given litS: Conversion[String, StateT[Compiler.ErrorF, Γ, Value[String]]] =
         s => StateT.pure(Value.string(s))
 
-      given refV: Conversion[Value, StateT[Compiler.ErrorF, Γ, Value]] =
+      given litZ: Conversion[Int, StateT[Compiler.ErrorF, Γ, Value[Int]]] =
+        z => StateT.pure(Value.int(z))
+
+      given refV[T]: Conversion[Value[T], StateT[Compiler.ErrorF, Γ, Value[T]]] =
         v => StateT.pure(v)

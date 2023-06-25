@@ -1,16 +1,15 @@
 package dc10.dsl
 
 import dc10.compile.Compiler
-import dc10.render.LangRenderer
 import munit.FunSuite
 import scala.language.implicitConversions
 
 class SchemaBuilderSuite extends FunSuite:
 
-  test("toString"):
+  val dsl = SchemaBuilder.dsl
+  import dsl.{*, given}
 
-    val dsl = SchemaBuilder.dsl
-    import dsl.*
+  test("toString"):
     
     def ast =
       for
@@ -31,9 +30,6 @@ class SchemaBuilderSuite extends FunSuite:
     assertEquals(obtained, expected)
 
   test("refV"):
-
-    val dsl = SchemaBuilder.dsl
-    import dsl.*
     
     def ast =
       for

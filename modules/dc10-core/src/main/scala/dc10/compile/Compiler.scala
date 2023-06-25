@@ -5,6 +5,7 @@ import cats.data.StateT
 import cats.kernel.Monoid
 import dc10.config.LangConfig
 import dc10.render.LangRenderer
+import dc10.schema.Binding
 import dc10.schema.definition.{FileDef, Statement}
 
 trait Compiler[F[_], V, A]:
@@ -38,7 +39,7 @@ object Compiler:
     def compile: Either[List[Compiler.Error], L] =
       ast.runEmptyS
   
-  extension [F[_]: Functor, A] (res: F[List[Statement]])
+  extension [F[_]: Functor, A] (res: F[List[Statement[Binding]]])
     def toString[V](
       using
         E: LangRenderer[V]
