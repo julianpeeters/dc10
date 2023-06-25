@@ -1,4 +1,4 @@
-package dc10.schema.define
+package dc10.schema.definition
 
 import dc10.schema.File
 

@@ -1,6 +1,14 @@
 package dc10.schema
 
-import dc10.schema.define.Statement
+import dc10.schema.definition.Statement
 import java.nio.file.Path
 
-case class File(path: Path, contents: List[Statement])
+sealed abstract class File:
+  def path: Path
+  def contents: List[Statement]
+
+object File:
+  def apply(p: Path, c: List[Statement]): File =
+    new File:
+      def path: Path = p
+      def contents: List[Statement] = c

@@ -2,29 +2,30 @@ package dc10
 
 import dc10.compile.Compiler
 import dc10.schema.{CaseClass, File, Type, Value}
-import dc10.schema.define.{CaseClassDef, FileDef, Statement, ValDef}
+import dc10.schema.definition.{FileDef, Statement}
 import java.nio.file.Path
 import munit.FunSuite
-// import dc10.render.given_Inspector_Type_Value
+import org.tpolecat.sourcepos.SourcePos
 
 class CompilerSuite extends FunSuite:
 
   test("toVirtualFile"):
 
-    def ast: Either[List[Compiler.Error], List[FileDef]] =
+    def ast(using sp: SourcePos): Either[List[Compiler.Error], List[FileDef]] =
       Right(
         List(
           FileDef(
             File(
               Path.of("Person.scala"),
               List(
-                CaseClassDef(
+                Statement.CaseClassDef(
                   CaseClass(
                     "Person",
-                    List(ValDef(Value("name", Type.string, None))),
+                    List(Statement.ValDef(Value("name", Type.string, None), 0)(sp)),
                     List.empty
-                  )
-                )
+                  ),
+                  0
+                )(sp)
               )
             )
           )

@@ -1,9 +1,9 @@
 package dc10.schema
 
-import dc10.schema.define.{PackageDef, Statement}
+import dc10.schema.definition.Statement
 import java.nio.file.Path
 
-sealed trait Package
+sealed abstract class Package
 object Package:
 
   extension  (pkg: Package)
@@ -19,7 +19,7 @@ object Package:
 
   case class Basic(
     nme: String,
-    nst: PackageDef
+    nst: Statement.PackageDef
   ) extends Package
 
   case class Empty(

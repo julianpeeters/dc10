@@ -1,14 +1,12 @@
 package dc10.io
 
-// import cats.FlatMap
-import cats.effect.Concurrent
 import cats.{FlatMap, Traverse}
+import cats.effect.Concurrent
 import cats.implicits.*
 import dc10.compile.{Compiler, VirtualFile}
 import dc10.compile.Compiler.toVirtualFile
 import dc10.config.LangConfig
-import dc10.render.LangRenderer
-import dc10.schema.define.FileDef
+import dc10.schema.definition.FileDef
 import fs2.{Stream, text}
 import fs2.io.file.{Files, Path}
 

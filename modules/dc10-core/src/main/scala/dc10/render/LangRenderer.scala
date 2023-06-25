@@ -1,7 +1,7 @@
 package dc10.render
 
 import dc10.schema.{Package, Type, Value}
-import dc10.schema.define.{CaseClassDef, PackageDef, Statement, UnsafeExpr, ValDef}
+import dc10.schema.definition.Statement
 
 trait LangRenderer[V]:
   def render(pkg: Package): String
@@ -16,13 +16,13 @@ object LangRenderer:
       def render(pkg: Package): String =
         s"package ${pkg.getPath.toString}\n\n${pkg}"
       def render(stmt: Statement): String = stmt match
-        case CaseClassDef(cls) =>
+        case Statement.CaseClassDef(cls, indent) =>
           s"case class ${cls.nme}(${cls.fields.map(render).mkString})"
-        case PackageDef(pkg) =>
+        case Statement.PackageDef(pkg) =>
           s"package ${render(pkg)}\n\n"
-        case ValDef(value) =>
+        case Statement.ValDef(value, indent) =>
           s"val ${render(value)}: ${render(value.tpe)}"
-        case UnsafeExpr(value) =>
+        case Statement.UnsafeExpr(value) =>
           render(value)
       def render(tpe: Type): String =
         tpe.nme
