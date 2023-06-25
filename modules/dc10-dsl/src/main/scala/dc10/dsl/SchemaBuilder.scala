@@ -15,6 +15,7 @@ trait SchemaBuilder[F[_]]:
   def VAL(nme: String, tpe: F[Type])(using sp: SourcePos): F[Value]
   def VAL(nme: String, tpe: F[Type], impl: F[Value])(using sp: SourcePos): F[Value]
   given litS: Conversion[String, F[Value]]
+  given refV: Conversion[Value, F[Value]]
 
 object SchemaBuilder:
 
@@ -74,3 +75,6 @@ object SchemaBuilder:
 
       given litS: Conversion[String, StateT[Compiler.ErrorF, Γ, Value]] =
         s => StateT.pure(Value.string(s))
+
+      given refV: Conversion[Value, StateT[Compiler.ErrorF, Γ, Value]] =
+        v => StateT.pure(v)

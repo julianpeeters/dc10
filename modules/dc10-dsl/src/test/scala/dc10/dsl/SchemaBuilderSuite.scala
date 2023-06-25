@@ -29,3 +29,24 @@ class SchemaBuilderSuite extends FunSuite:
       )
       
     assertEquals(obtained, expected)
+
+  test("refV"):
+
+    val dsl = SchemaBuilder.dsl
+    import dsl.*
+    
+    def ast =
+      for
+        m <- VAL("message", STRING, "hello, world")
+        _ <- VAL("greeting", STRING, m)
+      yield ()
+    
+    val obtained: Either[List[Compiler.Error], String] =
+      ast.compile.toString["scala-3.3.0"]
+      
+    val expected: Either[List[Compiler.Error], String] =
+      Right("""|val message: String = "hello, world"
+               |val greeting: String = message""".stripMargin
+      )
+      
+    assertEquals(obtained, expected)
