@@ -23,8 +23,8 @@ class SchemaBuilderSuite extends FunSuite:
       ast.compile.toString["scala-3.3.0"]
       
     val expected: Either[List[Compiler.Error], String] =
-      Right("""|val greeting: String
-               |val farewell: String
+      Right("""|val greeting: String = "hello, world"
+               |val farewell: String = "goodbye, world"
                |case class Person(val name: String)""".stripMargin
       )
       

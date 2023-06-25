@@ -21,7 +21,13 @@ object LangRenderer:
         case Statement.PackageDef(pkg) =>
           s"package ${render(pkg)}\n\n"
         case Statement.ValDef(value, indent) =>
-          s"val ${render(value)}: ${render(value.tpe)}"
+          value.impl.fold(
+            s"val ${render(value)}: ${render(value.tpe)}"
+          )(
+            rhs =>
+              s"val ${render(value)}: ${render(value.tpe)} = ${render(rhs)}"
+          )
+          
         case Statement.UnsafeExpr(value) =>
           render(value)
       def render(tpe: Type): String =
