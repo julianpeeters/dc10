@@ -5,13 +5,14 @@ import dc10.compile.Compiler
 import dc10.schema.definition.Statement
 import java.nio.file.Path
 import cats.data.Validated
+import cats.Show
 
 sealed trait Binding:
   type Tpe
 
 object Binding:
 
-  // File Level ///////////////////////////////////////////////////////////////
+  // File /////////////////////////////////////////////////////////////////////
   sealed abstract class File extends Binding:
     type Tpe = Nothing
     def path: Path
@@ -23,7 +24,7 @@ object Binding:
         def path: Path = p
         def contents: List[Statement[Binding]] = c
 
-  // Template Level ///////////////////////////////////////////////////////////
+  // Templates ////////////////////////////////////////////////////////////////
   sealed abstract class CaseClass[T] extends Binding:
     type Tpe = T
     def nme: String
@@ -33,19 +34,19 @@ object Binding:
   object CaseClass:
 
     def apply[T](
-      n: String,
+      n: T,
       fs: List[Statement.ValDef],
       bdy: List[Statement[Binding]]
-    ): CaseClass[T] =
+    )(using sh: Show[T]): CaseClass[T] =
       new CaseClass:
-        def nme = n
+        def nme = sh.show(n)
         def fields = fs
         def body = bdy
 
     def apply[T](
-      n: String,
+      n: T,
       ss: List[Statement[Binding]],
-    ): Compiler.ErrorF[CaseClass[T]] =
+    )(using sh: Show[T]): Compiler.ErrorF[CaseClass[T]] =
       ss.traverse(s => s match
         case d: Statement.CaseClassDef => Left(???)
         case d: Statement.PackageDef   => Left(???)
@@ -53,7 +54,7 @@ object Binding:
         case d: Statement.UnsafeExpr   => Left(???)
       ).map(fs => CaseClass(n, fs, Nil))
 
-  // Package Level ////////////////////////////////////////////////////////////
+  // Package //////////////////////////////////////////////////////////////////
   sealed abstract class Package extends Binding:
     type T = Nothing
   

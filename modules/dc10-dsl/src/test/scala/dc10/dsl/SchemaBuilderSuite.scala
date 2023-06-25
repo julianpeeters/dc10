@@ -1,6 +1,7 @@
 package dc10.dsl
 
 import dc10.compile.Compiler
+import dc10.schema.Binding.Value
 import munit.FunSuite
 import scala.language.implicitConversions
 

@@ -6,8 +6,21 @@ import org.tpolecat.sourcepos.SourcePos
 
 sealed trait Statement[A]
 object Statement:
-  // TODO: make into trait, add Tpe member
-  case class CaseClassDef(caseclass: CaseClass[String], indent: Int)(sp: SourcePos) extends Statement[Binding]
+
+  trait CaseClassDef extends Statement[Binding]:
+    type Tpe
+    def caseclass: CaseClass[Tpe]
+    def indent: Int
+    def sourcePos: SourcePos
+  
+  object CaseClassDef:
+    def apply[T](v: CaseClass[T], i: Int)(sp: SourcePos): CaseClassDef =
+      new CaseClassDef:
+        type Tpe = T
+        def caseclass: CaseClass[T] = v
+        def indent: Int = i
+        def sourcePos: SourcePos = sp
+  
   case class PackageDef(pkg: Package) extends Statement[Binding]
   
   trait ValDef extends Statement[Binding]:

@@ -7,9 +7,10 @@ import dc10.schema.Binding.{CaseClass, Type, Value}
 import dc10.schema.definition.Statement
 import dc10.schema.definition.Statement.{CaseClassDef, ValDef}
 import org.tpolecat.sourcepos.SourcePos
+import cats.Show
 
 trait SchemaBuilder[F[_]]:
-  def CASECLASS[A](nme: String, flds: F[A])(using sp: SourcePos): F[(Type[String], Value[String])]
+  def CASECLASS[T, A](nme: T, flds: F[A])(using  sh: Show[T], sp: SourcePos): F[(Type[T], A)]
   def BOOLEAN: F[Type[Boolean]]
   def INT: F[Type[Int]]
   def STRING: F[Type[String]]
@@ -34,19 +35,19 @@ object SchemaBuilder:
   def dsl: SchemaBuilder[[A] =>> StateT[Compiler.ErrorF, Γ, A]] =
     new SchemaBuilder[[A] =>> StateT[Compiler.ErrorF, Γ, A]]:
       
-      def CASECLASS[A](
-        nme: String,
+      def CASECLASS[T, A](
+        nme: T,
         flds: StateT[Compiler.ErrorF, Γ, A]
-      )(using sp: SourcePos): StateT[Compiler.ErrorF, Γ, (Type[String], Value[String])] =
+      )(using sh: Show[T], sp: SourcePos): StateT[Compiler.ErrorF, Γ, (Type[T], A)] =
         for
           (fs, a) <- StateT.liftF[Compiler.ErrorF, Γ, (Γ, A)](flds.runEmpty)
           // TODO parameterize
-          c <- StateT.liftF[Compiler.ErrorF, Γ, CaseClass[String]](CaseClass[String](nme, fs))
+          c <- StateT.liftF[Compiler.ErrorF, Γ, CaseClass[T]](CaseClass[T](nme, fs))
           d <- StateT.pure[Compiler.ErrorF, Γ, CaseClassDef](CaseClassDef(c, 0)(sp))
           _ <- StateT.modifyF[Compiler.ErrorF, Γ](ctx => ctx.ext(d))
         yield (
-          Type(nme, None),
-          /* TODO */ Value.string("hello world")
+          Type(sh.show(nme), None),
+          /* TODO */ a
         )
 
       def BOOLEAN: StateT[Compiler.ErrorF, Γ, Type[Boolean]] =
