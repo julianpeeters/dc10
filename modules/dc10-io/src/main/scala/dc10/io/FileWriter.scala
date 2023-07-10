@@ -5,10 +5,11 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import dc10.compile.{Compiler, VirtualFile}
 import dc10.compile.Compiler.toVirtualFile
-import dc10.config.LangConfig
-import dc10.schema.definition.FileDef
+import dc10.compile.Config
+import dc10.ast.Definition.SourceFile
 import fs2.{Stream, text}
 import fs2.io.file.{Files, Path}
+// import dc10.ast.SourceFile
 
 trait FileWriter[F[_]]:
   def writeFile(vf: VirtualFile): F[Path]
@@ -28,11 +29,11 @@ object FileWriter:
               .drain
         yield p
 
-extension [E[_]: FlatMap: Traverse, V](res: E[List[FileDef]])
+extension [E[_]: FlatMap: Traverse, V](res: E[List[SourceFile]])
   def toFile[F[_]: Concurrent: Files](
     using
-      C: Compiler[E, V, FileDef],
-      D: LangConfig[V],
+      C: Compiler[E, V, SourceFile],
+      D: Config[V],
   ): F[E[List[Path]]] =
     res.toVirtualFile.traverse(vfs =>
       vfs.traverse(vf => FileWriter[F].writeFile(vf)))

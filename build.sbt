@@ -1,5 +1,6 @@
 val CatsV = "2.9.0"
 val Fs2V = "3.7.0"
+val MonocleV = "3.1.0"
 val MUnitV = "0.7.29"
 val SourcePosV = "1.1.0"
 
