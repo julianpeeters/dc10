@@ -2,8 +2,8 @@ package dc10.scala.ctx.predef.datatype
 
 import cats.data.StateT
 import cats.implicits.*
-import dc10.Compiler
-import dc10.Compiler.ErrorF
+import dc10.compiler.Compiler
+import dc10.compiler.Compiler.ErrorF
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{CaseClass, Term}
 import dc10.scala.ast.Binding.Term.TypeLevel.__

@@ -1,14 +1,14 @@
 package dc10.scala.ast
 
 // import dc10.scala.ast.Binding
-import dc10.scala.ast.Binding.{CaseClass, File, Package, Term}
+import dc10.scala.ast.Binding.{CaseClass, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
 
 sealed trait Definition
 
 object Definition:
 
-  case class ScalaFile(file: File) extends Definition
+  // case class ScalaFile(file: File) extends Definition
 
   sealed trait Statement extends Definition:
     def indent: Int

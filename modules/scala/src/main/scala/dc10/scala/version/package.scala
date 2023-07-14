@@ -1,10 +1,12 @@
 package dc10.scala.version
 
-import dc10.Renderer
+import dc10.compiler.Renderer
 import dc10.scala.ast.Definition.Statement
 import dc10.scala.ast.Definition.Statement.{CaseClassDef, PackageDef, ValDef}
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{Package, Term}
+import dc10.scala.ast.Binding.Package.Basic
+import dc10.scala.ast.Binding.Package.Empty
 
 given `3.3.0`: Renderer["scala-3.3.0", Statement] =
   new Renderer["scala-3.3.0", Statement]:
@@ -15,7 +17,9 @@ given `3.3.0`: Renderer["scala-3.3.0", Statement] =
       case d@Statement.ObjectDef(_, _, _) =>
         ???
       case d@PackageDef(_, _) =>
-        s"package ${renderPackage(d.pkg)}\n\n"
+        d.pkg match
+          case Basic(nme, nst) => s"package ${nme}\n\n"
+          case Empty(ms) => render(ms)
       case d@ValDef(_, _) =>
         d.value match
           case Term.ValueLevel.Var.UserDefinedValue(n, t, mi) =>
@@ -27,8 +31,9 @@ given `3.3.0`: Renderer["scala-3.3.0", Statement] =
             )
     ).mkString("\n")
 
-    def renderPackage(pkg: Package): String =
-      s"package ${pkg.getPath.toString}\n\n${pkg}"
+    def renderPackage(pkg: Package): String = pkg match
+      case Basic(nme, nst) => s".${nme}${renderPackage(nst.pkg)}"
+      case Empty(ms) => render(ms)
 
     def renderType[T](tpe: Term.TypeLevel[T]): String =
       tpe match

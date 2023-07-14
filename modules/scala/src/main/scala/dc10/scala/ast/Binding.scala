@@ -8,17 +8,6 @@ sealed trait Binding
 
 object Binding:
 
-  // Files ////////////////////////////////////////////////////////////////////
-  sealed abstract class File extends Binding:
-    def path: Path
-    def contents: List[Statement]
-
-  object File:
-    def apply(p: Path, c: List[Statement]): File =
-      new File:
-        def path: Path = p
-        def contents: List[Statement] = c
-
   // Templates ////////////////////////////////////////////////////////////////
   sealed abstract class CaseClass[T, A] extends Binding:
     type Tpe = T
