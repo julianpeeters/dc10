@@ -2,9 +2,9 @@ package dc10.scala.predef
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.*
-import dc10.Compiler
+import dc10.{compile, toString}
+import dc10.compiler.Compiler
 import dc10.scala.dsl.{*, given}
-import dc10.scala.{compile, toString}
 import dc10.scala.version.`3.3.0`
 
 import munit.FunSuite
