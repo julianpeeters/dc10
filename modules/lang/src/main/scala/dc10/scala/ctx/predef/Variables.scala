@@ -1,14 +1,13 @@
 package dc10.scala.ctx.predef
 
 import cats.data.StateT
+import dc10.compiler.Compiler.ErrorF
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.Term
 import dc10.scala.ast.Definition.Statement
 import dc10.scala.ast.Definition.Statement.ValDef
 import dc10.scala.ctx.ext
-import dc10.compiler.Compiler.ErrorF
 import org.tpolecat.sourcepos.SourcePos
-import dc10.compiler.Compiler
 
 trait Variables[F[_]]:
   def VAL[T](nme: String, tpe: F[Term.TypeLevel[T]])(using sp: SourcePos): F[Term.ValueLevel.Var.UserDefinedValue[T]]

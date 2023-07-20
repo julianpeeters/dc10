@@ -3,9 +3,9 @@ package dc10
 import cats.{Functor, FlatMap}
 import cats.data.StateT
 import cats.kernel.Monoid
-import dc10.schema.FileDef
 import dc10.compiler.{Compiler, Renderer}
 import dc10.compiler.VirtualFile
+import dc10.schema.FileDef
 
 extension [F[_]: FlatMap, L: Monoid, A] (ast: StateT[F, L, A])
   def compile: F[L] =
