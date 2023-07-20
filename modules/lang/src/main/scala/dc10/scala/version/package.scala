@@ -65,10 +65,6 @@ given `3.3.0`: Renderer["scala-3.3.0", Statement] =
         case Term.ValueLevel.Var.ListCtor() => s"List"
         case Term.ValueLevel.Var.UserDefinedValue(s, t, i) => s
 
-
-    // override def render(a: List[Statement]): String =
-    //   ???
-
     override def version: "scala-3.3.0" =
       "scala-3.3.0"
 

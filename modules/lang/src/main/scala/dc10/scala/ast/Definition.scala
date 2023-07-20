@@ -1,6 +1,5 @@
 package dc10.scala.ast
 
-// import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{CaseClass, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
 

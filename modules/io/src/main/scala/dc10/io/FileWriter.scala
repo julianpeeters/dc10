@@ -2,7 +2,6 @@ package dc10.io
 
 import cats.effect.Concurrent
 import cats.implicits.*
-import dc10.compiler.{Compiler, Config}
 import dc10.compiler.VirtualFile
 import fs2.{Stream, text}
 import fs2.io.file.{Files, Path}

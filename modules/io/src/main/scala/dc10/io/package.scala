@@ -5,7 +5,6 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import dc10.compiler.{Compiler, Config}
 import dc10.schema.FileDef
-import dc10.io.FileWriter
 import fs2.io.file.{Files, Path}
 
 extension [E[_]: FlatMap: Traverse, V, A](res: E[List[FileDef[A]]])
