@@ -20,17 +20,17 @@ object Compiler:
     using
       E: Applicative[ErrorF],
       C: Config[V],
-      D: Renderer[V, A],
+      D: Renderer[Compiler.ErrorF, V, A],
   ): Compiler[ErrorF, A] =
     new Compiler[ErrorF, A]:
       def generate(
         input: List[FileDef[A]],
       ): Compiler.ErrorF[List[VirtualFile]] =
           input.traverse(fileDef =>
-            E.pure(
+            D.render(fileDef.contents).map(str =>
               VirtualFile(
                 fileDef.path,
-                D.render(fileDef.contents)
+                str
               )
             )
           )

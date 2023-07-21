@@ -1,5 +1,5 @@
 package dc10.renderer
 
-trait Renderer[V, A]:
-  def render(input: List[A]): String
-  def version: V
+trait Renderer[F[_], V, A]:
+  def render(input: List[A]): F[String]
+  def version: F[V]
