@@ -1,6 +1,6 @@
 package dc10.scala.ast
 
-import dc10.scala.ast.Binding.{CaseClass, Package, Term}
+import dc10.scala.ast.Binding.{Record, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
 
 sealed trait Definition
@@ -30,25 +30,25 @@ object Definition:
     // ) extends Statement
   
 
-    sealed abstract case class CaseClassDef(
+    sealed abstract case class RecordDef(
       indent: Int,
       sp: SourcePos
     ) extends Statement:
       type Arg
       type Tpe
-      def caseclass: CaseClass[Tpe, Arg]
+      def caseclass: Record[Tpe, Arg]
 
-    object CaseClassDef:
+    object RecordDef:
       def apply[T, A](
-        v: CaseClass[T, A],
+        v: Record[T, A],
         i: Int
       )(
         using sp: SourcePos
-      ): CaseClassDef =
-        new CaseClassDef(i, sp):
+      ): RecordDef =
+        new RecordDef(i, sp):
           type Arg = A
           type Tpe = T
-          def caseclass: CaseClass[T, A] = v
+          def caseclass: Record[T, A] = v
 
     case class ObjectDef(
       module: Object,

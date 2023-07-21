@@ -5,7 +5,7 @@ import cats.implicits.*
 import dc10.compiler.Compiler
 import dc10.compiler.Compiler.ErrorF
 import dc10.scala.ast.Binding
-import dc10.scala.ast.Binding.{CaseClass, Term}
+import dc10.scala.ast.Binding.{Record, Term}
 import dc10.scala.ast.Binding.Term.TypeLevel.__
 import dc10.scala.ast.Definition.Statement
 import dc10.scala.ctx.ext
@@ -36,16 +36,16 @@ object ComplexTypes:
         (fields, a) <- StateT.liftF(fields.runEmpty)
         fs <- StateT.liftF(
           fields.traverse(field => field match
-            case d@Statement.CaseClassDef(_,_) => Left(???)
+            case d@Statement.RecordDef(_,_) => Left(???)
             case d@Statement.ObjectDef(_,_,_)  => Left(???)
             case d@Statement.PackageDef(_,_)   => Left(???)
             case d@Statement.ValDef(_,_)       => Right[List[Compiler.Error], Statement.ValDef](d)
           )
         )
-        c <- StateT.pure(CaseClass[T, A](name, fs))
+        c <- StateT.pure(Record[T, A](name, fs))
         f <- StateT.pure(Term.ValueLevel.Lam1(a, Term.ValueLevel.AppCtor1(c.tpe, a)))
         v <- StateT.pure(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.tpe, c.tpe), Some(f)))
-        d <- StateT.pure(Statement.CaseClassDef(c, 0))
+        d <- StateT.pure(Statement.RecordDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield (c.tpe, v)
 

@@ -8,6 +8,7 @@ import munit.FunSuite
 import dc10.scala.dsl.{*, given}
 import dc10.{compile, toString}
 import dc10.scala.version.`3.3.0`
+import dc10.scala.dsl
 
 class ComplexTypesSuite extends FunSuite:
 
