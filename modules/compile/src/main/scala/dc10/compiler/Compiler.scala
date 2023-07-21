@@ -16,18 +16,18 @@ object Compiler:
 
   case class VirtualFile(path: Path, contents: String)
 
-  given compiler[V, A] (
+  given compiler[F[_], V, A] (
     using
-      E: Applicative[ErrorF],
+      E: Applicative[F],
       C: Config[V],
-      D: Renderer[Compiler.ErrorF, V, A],
-  ): Compiler[ErrorF, A] =
-    new Compiler[ErrorF, A]:
+      D: Renderer[F, V, A],
+  ): Compiler[F, A] =
+    new Compiler[F, A]:
       def generate(
         input: List[FileDef[A]],
-      ): Compiler.ErrorF[List[VirtualFile]] =
+      ): F[List[VirtualFile]] =
           input.traverse(fileDef =>
-            D.render(fileDef.contents).map(str =>
+            E.map(D.render(fileDef.contents))(str =>
               VirtualFile(
                 fileDef.path,
                 str
