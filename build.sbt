@@ -25,12 +25,23 @@ lazy val commonSettings = Seq(
 
 lazy val dc10 = (project in file("."))
   .settings(name := "dc10")
-  .aggregate(`dc10-core`, `dc10-io`, `dc10-lang`)
+  .aggregate(`dc10-ast`, `dc10-compile`, `dc10-io`, `dc10-scala`)
 
-lazy val `dc10-core` = (project in file("modules/core"))
+lazy val `dc10-ast` = (project in file("modules/ast"))
+  // .dependsOn(`dc10-compile`)
   .settings(
     commonSettings,
-    name := "dc10-core",
+    name := "dc10-ast",
+    libraryDependencies ++= Seq(
+      "org.tpolecat"  %% "sourcepos" % SourcePosV,
+      "org.typelevel" %% "cats-core" % CatsV,
+    )
+  )
+
+lazy val `dc10-compile` = (project in file("modules/compile"))
+  .settings(
+    commonSettings,
+    name := "dc10-compile",
     libraryDependencies ++= Seq(
       "org.tpolecat"  %% "sourcepos" % SourcePosV,
       "org.typelevel" %% "cats-core" % CatsV,
@@ -38,7 +49,7 @@ lazy val `dc10-core` = (project in file("modules/core"))
   )
 
 lazy val `dc10-io` = (project in file("modules/io"))
-  .dependsOn(`dc10-core`)
+  .dependsOn(`dc10-compile`)
   .settings(
     commonSettings,
     name := "dc10-io",
@@ -47,9 +58,9 @@ lazy val `dc10-io` = (project in file("modules/io"))
     )
   )
 
-lazy val `dc10-lang` = (project in file("modules/lang"))
-  .dependsOn(`dc10-core`)
+lazy val `dc10-scala` = (project in file("modules/scala"))
+  .dependsOn(`dc10-ast`, `dc10-compile`)
   .settings(
     commonSettings,
-    name := "dc10-lang",
+    name := "dc10-scala",
   )

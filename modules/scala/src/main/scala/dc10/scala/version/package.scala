@@ -2,7 +2,7 @@ package dc10.scala.version
 
 import dc10.compiler.Renderer
 import dc10.scala.ast.Definition.Statement
-import dc10.scala.ast.Definition.Statement.{CaseClassDef, PackageDef, ValDef}
+import dc10.scala.ast.Definition.Statement.{RecordDef, PackageDef, ValDef}
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{Package, Term}
 import dc10.scala.ast.Binding.Package.Basic
@@ -12,7 +12,7 @@ given `3.3.0`: Renderer["scala-3.3.0", Statement] =
   new Renderer["scala-3.3.0", Statement]:
 
     def render(input: List[Statement]): String = input.map(stmt => stmt match
-      case d@CaseClassDef(_, _) =>
+      case d@RecordDef(_, _) =>
         s"case class ${d.caseclass.nme}(${render(d.caseclass.fields).mkString})"
       case d@Statement.ObjectDef(_, _, _) =>
         ???

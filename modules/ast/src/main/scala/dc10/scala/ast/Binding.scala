@@ -1,6 +1,6 @@
 package dc10.scala.ast
 
-import cats.implicits.*
+// import cats.implicits.*
 import dc10.scala.ast.Definition.Statement
 import java.nio.file.Path
 
@@ -9,19 +9,19 @@ sealed trait Binding
 object Binding:
 
   // Templates ////////////////////////////////////////////////////////////////
-  sealed abstract class CaseClass[T, A] extends Binding:
+  sealed abstract class Record[T, A] extends Binding:
     type Tpe = T
     def nme: String
     def tpe: Term.TypeLevel[T]
     def fields: List[Statement.ValDef]
     def body: List[Statement]
 
-  object CaseClass:
+  object Record:
     def apply[T, A](
       n: String,
       fs: List[Statement.ValDef],
-    ): CaseClass[T, A] =
-      new CaseClass[T, A]:
+    ): Record[T, A] =
+      new Record[T, A]:
         type Tpe = T
         def nme = n
         def tpe: Term.TypeLevel[T] = Term.TypeLevel.Var.UserDefinedType[T](n, None)

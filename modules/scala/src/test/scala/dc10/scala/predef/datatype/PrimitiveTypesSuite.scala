@@ -4,6 +4,7 @@ import _root_.scala.language.implicitConversions
 import dc10.compiler.Compiler
 
 import munit.FunSuite
+import dc10.scala.dsl
 
 class PrimitiveTypeSuite extends FunSuite:
   
