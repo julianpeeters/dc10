@@ -1,12 +1,12 @@
 package dc10.scala.version
 
-import dc10.compiler.Renderer
-import dc10.scala.ast.Definition.Statement
-import dc10.scala.ast.Definition.Statement.{RecordDef, PackageDef, ValDef}
-import dc10.scala.ast.Binding
-import dc10.scala.ast.Binding.{Package, Term}
-import dc10.scala.ast.Binding.Package.Basic
-import dc10.scala.ast.Binding.Package.Empty
+import dc10.renderer.Renderer
+import dc10.ast.Definition.Statement
+import dc10.ast.Definition.Statement.{RecordDef, PackageDef, ValDef}
+import dc10.ast.Binding
+import dc10.ast.Binding.{Package, Term}
+import dc10.ast.Binding.Package.Basic
+import dc10.ast.Binding.Package.Empty
 
 given `3.3.0`: Renderer["scala-3.3.0", Statement] =
   new Renderer["scala-3.3.0", Statement]:

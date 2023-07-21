@@ -1,6 +1,6 @@
-package dc10.scala.ast
+package dc10.ast
 
-import dc10.scala.ast.Binding.{Record, Package, Term}
+import dc10.ast.Binding.{Record, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
 
 sealed trait Definition

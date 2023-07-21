@@ -1,6 +1,6 @@
-package dc10.scala.ast
+package dc10.ast
 
-import dc10.scala.ast.Definition.Statement
+import dc10.ast.Definition.Statement
 import java.nio.file.Path
 
 sealed trait Binding
