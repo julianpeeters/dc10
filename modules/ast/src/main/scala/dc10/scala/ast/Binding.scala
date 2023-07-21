@@ -1,6 +1,5 @@
 package dc10.scala.ast
 
-// import cats.implicits.*
 import dc10.scala.ast.Definition.Statement
 import java.nio.file.Path
 

@@ -2,6 +2,7 @@ package dc10.compiler
 
 import cats.Applicative
 import cats.implicits.*
+import dc10.renderer.Renderer
 import dc10.schema.FileDef
 
 trait Compiler[F[_], A]:

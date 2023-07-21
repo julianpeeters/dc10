@@ -7,8 +7,6 @@ sealed trait Definition
 
 object Definition:
 
-  // case class ScalaFile(file: File) extends Definition
-
   sealed trait Statement extends Definition:
     def indent: Int
     def sp: SourcePos
