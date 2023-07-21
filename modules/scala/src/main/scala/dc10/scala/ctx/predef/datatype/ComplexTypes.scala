@@ -42,7 +42,7 @@ object ComplexTypes:
             case d@Statement.ValDef(_,_)       => Right[List[Compiler.Error], Statement.ValDef](d)
           )
         )
-        c <- StateT.pure(Record[T, A](name, fs))
+        c <- StateT.pure(Record[T](name, fs))
         f <- StateT.pure(Term.ValueLevel.Lam1(a, Term.ValueLevel.AppCtor1(c.tpe, a)))
         v <- StateT.pure(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.tpe, c.tpe), Some(f)))
         d <- StateT.pure(Statement.RecordDef(c, 0))

@@ -32,21 +32,19 @@ object Definition:
       indent: Int,
       sp: SourcePos
     ) extends Statement:
-      type Arg
       type Tpe
-      def caseclass: Record[Tpe, Arg]
+      def caseclass: Record[Tpe]
 
     object RecordDef:
-      def apply[T, A](
-        v: Record[T, A],
+      def apply[T](
+        v: Record[T],
         i: Int
       )(
         using sp: SourcePos
       ): RecordDef =
         new RecordDef(i, sp):
-          type Arg = A
           type Tpe = T
-          def caseclass: Record[T, A] = v
+          def caseclass: Record[T] = v
 
     case class ObjectDef(
       module: Object,
