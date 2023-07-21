@@ -7,11 +7,11 @@ import dc10.compiler.Compiler.ErrorF
 // import dc10.scala.ast.Binding
 // import dc10.scala.ast.Binding.{CaseClass, Term}
 // import dc10.scala.ast.Binding.Term.TypeLevel.__
-import dc10.scala.ast.Definition.Statement
+import dc10.ast.Definition.Statement
 // import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
 // import dc10.scala.ast.Definition.ScalaFile
-import dc10.scala.ast.Definition.Statement.PackageDef
+import dc10.ast.Definition.Statement.PackageDef
 import dc10.schema.FileDef
 
 trait Packages[F[_], G[_]]:

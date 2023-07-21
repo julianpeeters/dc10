@@ -1,9 +1,9 @@
 package dc10.scala.ctx.predef.file
 
 import cats.data.StateT
-import dc10.scala.ast.Binding
-import dc10.scala.ast.Binding.Package
-import dc10.scala.ast.Definition.Statement
+import dc10.ast.Binding
+import dc10.ast.Binding.Package
+import dc10.ast.Definition.Statement
 import dc10.scala.ctx.ext
 import dc10.compiler.Compiler
 import dc10.compiler.Compiler.ErrorF

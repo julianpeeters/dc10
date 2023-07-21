@@ -1,13 +1,11 @@
-package dc10.scala.ast
+package dc10.ast
 
-import dc10.scala.ast.Binding.{Record, Package, Term}
+import dc10.ast.Binding.{Record, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
 
 sealed trait Definition
 
 object Definition:
-
-  // case class ScalaFile(file: File) extends Definition
 
   sealed trait Statement extends Definition:
     def indent: Int
@@ -34,21 +32,19 @@ object Definition:
       indent: Int,
       sp: SourcePos
     ) extends Statement:
-      type Arg
       type Tpe
-      def caseclass: Record[Tpe, Arg]
+      def caseclass: Record[Tpe]
 
     object RecordDef:
-      def apply[T, A](
-        v: Record[T, A],
+      def apply[T](
+        v: Record[T],
         i: Int
       )(
         using sp: SourcePos
       ): RecordDef =
         new RecordDef(i, sp):
-          type Arg = A
           type Tpe = T
-          def caseclass: Record[T, A] = v
+          def caseclass: Record[T] = v
 
     case class ObjectDef(
       module: Object,
