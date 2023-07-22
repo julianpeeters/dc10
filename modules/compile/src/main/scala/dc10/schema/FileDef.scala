@@ -2,4 +2,7 @@ package dc10.schema
 
 import java.nio.file.Path
 
-case class FileDef[A](path: Path, contents: List[A])
+/**
+ * The type A is, e.g., a single definition, or a list of defintions.
+ */ 
+case class FileDef[A](path: Path, contents: A)

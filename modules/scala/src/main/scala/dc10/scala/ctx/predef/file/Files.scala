@@ -1,12 +1,12 @@
 package dc10.scala.ctx.predef.file
 
 import cats.data.StateT
-import dc10.ast.Binding
-import dc10.ast.Binding.Package
-import dc10.ast.Definition.Statement
-import dc10.scala.ctx.ext
 import dc10.compiler.Compiler
 import dc10.compiler.Compiler.ErrorF
+import dc10.scala.ast.Binding
+import dc10.scala.ast.Binding.Package
+import dc10.scala.ast.Definition.Statement
+import dc10.scala.ctx.ext
 import dc10.schema.FileDef
 import java.nio.file.Path
 import org.tpolecat.sourcepos.SourcePos
@@ -18,19 +18,18 @@ object Files:
 
   trait Mixins extends Files[
     [A] =>> StateT[ErrorF, List[Statement], A],
-    [A] =>> StateT[ErrorF, List[FileDef[Statement]], A]
+    [A] =>> StateT[ErrorF, List[FileDef[List[Statement]]], A]
     ]:
 
     def FILE[A](
       nme: String,
       statements: StateT[ErrorF, List[Statement], A]
-    )(using sp: SourcePos): StateT[ErrorF, List[FileDef[Statement]], A] =
+    )(using sp: SourcePos): StateT[ErrorF, List[FileDef[List[Statement]]], A] =
       for
-        (ms, a) <- StateT.liftF[ErrorF, List[FileDef[Statement]], (List[Statement], A)](statements.runEmpty)
-        n <- StateT.pure[ErrorF, List[FileDef[Statement]], Path](Path.of(nme))
-        p <- StateT.pure[ErrorF, List[FileDef[Statement]], Statement.PackageDef](
+        (ms, a) <- StateT.liftF[ErrorF, List[FileDef[List[Statement]]], (List[Statement], A)](statements.runEmpty)
+        n <- StateT.pure[ErrorF, List[FileDef[List[Statement]]], Path](Path.of(nme))
+        p <- StateT.pure[ErrorF, List[FileDef[List[Statement]]], Statement.PackageDef](
           Statement.PackageDef(0, Package.Empty(ms)))
-        // f <- StateT.pure[ErrorF, List[FileDef[Statement]], File](File(n, List(p)))
-        d <- StateT.pure[ErrorF, List[FileDef[Statement]], FileDef[Statement]](FileDef[Statement](n, List(p)))
-        _ <- StateT.modifyF[ErrorF, List[FileDef[Statement]]](ctx => ctx.ext(d))
+        d <- StateT.pure[ErrorF, List[FileDef[List[Statement]]], FileDef[List[Statement]]](FileDef[List[Statement]](n, List(p)))
+        _ <- StateT.modifyF[ErrorF, List[FileDef[List[Statement]]]](ctx => ctx.ext(d))
       yield a

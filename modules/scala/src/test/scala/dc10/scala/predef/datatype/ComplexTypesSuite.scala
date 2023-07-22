@@ -2,7 +2,7 @@ package dc10.scala.predef.datatype
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.*
-import dc10.compiler.{Compiler, compile, toString}
+import dc10.compiler.{Compiler, compile, toStrings}
 import munit.FunSuite
 
 import dc10.scala.dsl.{*, given}
@@ -18,7 +18,7 @@ class ComplexTypesSuite extends FunSuite:
     def ast = CASECLASS[Person, String]("Person", VAL("name", STRING))
     
     val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toStrings["scala-3.3.0"]
       
     val expected: Either[List[Compiler.Error], String] =
       Right("""case class Person(val name: String)""".stripMargin)
@@ -36,7 +36,7 @@ class ComplexTypesSuite extends FunSuite:
       yield ()
     
     val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toStrings["scala-3.3.0"]
       
     val expected: Either[List[Compiler.Error], String] =
       Right("""|val l1: List[Int]
@@ -58,7 +58,7 @@ class ComplexTypesSuite extends FunSuite:
       yield ()
     
     val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toStrings["scala-3.3.0"]
       
     val expected: Either[List[Compiler.Error], String] =
       Right("""|val l1: List[Int] = List(1, 2, 3)
