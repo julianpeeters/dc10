@@ -2,16 +2,13 @@ package dc10.scala.predef
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.*
-import dc10.compiler.{Compiler, compile, toString}
+import dc10.compiler.{Compiler, compile, toStrings}
 import dc10.scala.dsl.{*, given}
 import dc10.scala.version.`3.3.0`
-
 import munit.FunSuite
-import dc10.scala.dsl
 
 class FunctionsSuite extends FunSuite:
 
-  
   test("val dec"):
 
     def ast =
@@ -20,11 +17,10 @@ class FunctionsSuite extends FunSuite:
       yield ()
     
     val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toStrings["scala-3.3.0"]
       
     val expected: Either[List[Compiler.Error], String] =
-      Right("""val f1: Int => String""".stripMargin
-      )
+      Right("""val f1: Int => String""".stripMargin)
       
     assertEquals(obtained, expected)
 
@@ -40,7 +36,7 @@ class FunctionsSuite extends FunSuite:
       yield ()
     
     val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toStrings["scala-3.3.0"]
       
     val expected: Either[List[Compiler.Error], String] =
       Right("""|val f1: String => String = input => input

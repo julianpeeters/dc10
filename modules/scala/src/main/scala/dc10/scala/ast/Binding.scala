@@ -1,15 +1,15 @@
-package dc10.ast
+package dc10.scala.ast
 
-import dc10.ast.Definition.Statement
 import java.nio.file.Path
-import dc10.ast.Binding.Term.ValueLevel
+import dc10.scala.ast.Binding.Term.ValueLevel
+import dc10.scala.ast.Definition.Statement
 
 sealed trait Binding
 
 object Binding:
 
   // Templates ////////////////////////////////////////////////////////////////
-  sealed abstract class Record[T] extends Binding:
+  sealed abstract class CaseClass[T] extends Binding:
     type Tpe = T
     def nme: String
     def tpe: Term.TypeLevel[T]
@@ -17,12 +17,12 @@ object Binding:
     def body: List[Statement]
     // def ctor: Term.ValueLevel[A => T]
 
-  object Record:
+  object CaseClass:
     def apply[T](
       n: String,
       fs: List[Statement.ValDef],
-    ): Record[T] =
-      new Record[T]:
+    ): CaseClass[T] =
+      new CaseClass[T]:
         type Tpe = T
         def nme = n
         def tpe: Term.TypeLevel[T] = Term.TypeLevel.Var.UserDefinedType[T](n, None)
@@ -89,8 +89,3 @@ object Binding:
         case class StringLiteral(s: String) extends Var[String]
         case class ListCtor[A]() extends Var[List[A] => List[A]]
         case class UserDefinedValue[T](nme: String, tpe: Term.TypeLevel[T], impl: Option[ValueLevel[T]]) extends Var[T]
-
-
-        
-
-

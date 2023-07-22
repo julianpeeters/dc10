@@ -25,18 +25,7 @@ lazy val commonSettings = Seq(
 
 lazy val dc10 = (project in file("."))
   .settings(name := "dc10")
-  .aggregate(`dc10-ast`, `dc10-compile`, `dc10-io`, `dc10-scala`)
-
-lazy val `dc10-ast` = (project in file("modules/ast"))
-  // .dependsOn(`dc10-compile`)
-  .settings(
-    commonSettings,
-    name := "dc10-ast",
-    libraryDependencies ++= Seq(
-      "org.tpolecat"  %% "sourcepos" % SourcePosV,
-      "org.typelevel" %% "cats-core" % CatsV,
-    )
-  )
+  .aggregate(`dc10-compile`, `dc10-io`, `dc10-scala`)
 
 lazy val `dc10-compile` = (project in file("modules/compile"))
   .settings(
@@ -59,7 +48,7 @@ lazy val `dc10-io` = (project in file("modules/io"))
   )
 
 lazy val `dc10-scala` = (project in file("modules/scala"))
-  .dependsOn(`dc10-ast`, `dc10-compile`)
+  .dependsOn(`dc10-compile`)
   .settings(
     commonSettings,
     name := "dc10-scala",

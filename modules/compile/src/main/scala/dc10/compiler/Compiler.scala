@@ -1,13 +1,12 @@
 package dc10.compiler
 
-import cats.Applicative
 import cats.implicits.*
 import dc10.renderer.Renderer
 import dc10.schema.FileDef
 import java.nio.file.Path
 
-trait Compiler[F[_], A]:
-  def generate(input: List[FileDef[A]]): F[List[Compiler.VirtualFile]]
+trait Compiler[A]:
+  def generate(input: List[FileDef[A]]): List[Compiler.VirtualFile]
 
 object Compiler:
   
@@ -16,21 +15,18 @@ object Compiler:
 
   case class VirtualFile(path: Path, contents: String)
 
-  given compiler[V, A] (
+  given compilerA[V, A] (
     using
-      E: Applicative[ErrorF],
       C: Config[V],
-      D: Renderer[Compiler.ErrorF, V, A],
-  ): Compiler[ErrorF, A] =
-    new Compiler[ErrorF, A]:
+      D: Renderer[V, A],
+  ): Compiler[A] =
+    new Compiler[A]:
       def generate(
         input: List[FileDef[A]],
-      ): Compiler.ErrorF[List[VirtualFile]] =
-          input.traverse(fileDef =>
-            D.render(fileDef.contents).map(str =>
-              VirtualFile(
-                fileDef.path,
-                str
-              )
+      ): List[VirtualFile] =
+          input.map(fileDef =>
+            VirtualFile(
+              fileDef.path,
+              D.render(fileDef.contents)
             )
           )

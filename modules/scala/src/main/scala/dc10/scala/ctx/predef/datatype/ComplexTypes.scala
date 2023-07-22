@@ -4,10 +4,10 @@ import cats.data.StateT
 import cats.implicits.*
 import dc10.compiler.Compiler
 import dc10.compiler.Compiler.ErrorF
-import dc10.ast.Binding
-import dc10.ast.Binding.{Record, Term}
-import dc10.ast.Binding.Term.TypeLevel.__
-import dc10.ast.Definition.Statement
+import dc10.scala.ast.Binding
+import dc10.scala.ast.Binding.{CaseClass, Term}
+import dc10.scala.ast.Binding.Term.TypeLevel.__
+import dc10.scala.ast.Definition.Statement
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
 
@@ -42,7 +42,7 @@ object ComplexTypes:
             case d@Statement.ValDef(_,_)       => Right[List[Compiler.Error], Statement.ValDef](d)
           )
         )
-        c <- StateT.pure(Record[T](name, fs))
+        c <- StateT.pure(CaseClass[T](name, fs))
         f <- StateT.pure(Term.ValueLevel.Lam1(a, Term.ValueLevel.AppCtor1(c.tpe, a)))
         v <- StateT.pure(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.tpe, c.tpe), Some(f)))
         d <- StateT.pure(Statement.RecordDef(c, 0))
