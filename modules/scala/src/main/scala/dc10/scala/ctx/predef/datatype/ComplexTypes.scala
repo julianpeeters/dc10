@@ -6,7 +6,7 @@ import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{CaseClass, Term}
 import dc10.scala.ast.Binding.Term.TypeLevel.__
 import dc10.scala.ast.Definition.Statement
-import dc10.scala.ctx.error.CompileError
+import dc10.scala.error.CompileError
 import dc10.scala.ctx.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos

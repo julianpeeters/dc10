@@ -2,7 +2,7 @@ package dc10.scala.ctx
 
 import cats.{Applicative, Functor}
 import dc10.scala.ast.Definition.Statement
-import dc10.scala.ctx.error.CompileError
+import dc10.scala.error.CompileError
 import dc10.schema.FileDef
 
 type ErrorF[A] = Either[List[CompileError], A]

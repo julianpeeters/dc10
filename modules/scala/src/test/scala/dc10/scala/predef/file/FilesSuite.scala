@@ -3,7 +3,7 @@ package dc10.scala.predef.file
 import _root_.scala.language.implicitConversions
 
 import munit.FunSuite
-import dc10.scala.ctx.error.CompileError
+import dc10.scala.error.CompileError
 import dc10.scala.dsl
 
 class PrimitiveTypeSuite extends FunSuite:

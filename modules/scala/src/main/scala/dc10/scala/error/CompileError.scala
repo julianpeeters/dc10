@@ -1,3 +1,3 @@
-package dc10.scala.ctx.error
+package dc10.scala.error
 
 sealed trait CompileError
