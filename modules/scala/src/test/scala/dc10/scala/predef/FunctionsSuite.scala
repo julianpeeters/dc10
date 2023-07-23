@@ -2,7 +2,7 @@ package dc10.scala.predef
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.*
-import dc10.compiler.{Compiler, compile, toStrings}
+import dc10.compiler.{compile, toString}
 import dc10.scala.dsl.{*, given}
 import dc10.scala.version.`3.3.0`
 import munit.FunSuite
@@ -16,11 +16,11 @@ class FunctionsSuite extends FunSuite:
         _ <- VAL("f1", INT ==> STRING)
       yield ()
     
-    val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toStrings["scala-3.3.0"]
+    val obtained: String =
+      ast.compile.toString["scala-3.3.0"]
       
-    val expected: Either[List[Compiler.Error], String] =
-      Right("""val f1: Int => String""".stripMargin)
+    val expected: String =
+      """val f1: Int => String""".stripMargin
       
     assertEquals(obtained, expected)
 
@@ -35,13 +35,12 @@ class FunctionsSuite extends FunSuite:
         _ <- VAL("c", STRING)(f(b))
       yield ()
     
-    val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toStrings["scala-3.3.0"]
+    val obtained: String =
+      ast.compile.toString["scala-3.3.0"]
       
-    val expected: Either[List[Compiler.Error], String] =
-      Right("""|val f1: String => String = input => input
-               |val b: String = f1("hello")
-               |val c: String = f1(b)""".stripMargin
-      )
+    val expected: String =
+      """|val f1: String => String = input => input
+         |val b: String = f1("hello")
+         |val c: String = f1(b)""".stripMargin
       
     assertEquals(obtained, expected)

@@ -1,6 +1,6 @@
 package dc10.compiler
 
-import cats.{FlatMap, Functor}
+import cats.{Bifoldable, FlatMap, Functor}
 import cats.data.StateT
 import cats.kernel.Monoid
 import dc10.compiler.Compiler.VirtualFile
@@ -11,8 +11,12 @@ extension [F[_]: FlatMap, L: Monoid, A] (ast: StateT[F, L, A])
   def compile: F[L] =
     ast.runEmptyS
 
-extension [F[_]: Functor, A](res: F[A])
-  def toStrings[V](using R: Renderer[V, A]): F[String] =
+extension [F[_,_]: Bifoldable, E, A](res: F[E, A])
+  def toString[V](using R: Renderer[V, E, A]): String =
+    Bifoldable[F].bifoldMap(res)(R.renderError, R.render)
+    
+extension [F[_]: Functor, E, A](res: F[A])
+  def toStringOrError[V](using R: Renderer[V, E, A]): F[String] =
     Functor[F].map(res)(R.render)
 
 extension [F[_]: Functor, A] (res: F[List[FileDef[A]]])

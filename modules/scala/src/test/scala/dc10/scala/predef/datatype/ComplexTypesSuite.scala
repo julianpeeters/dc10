@@ -2,7 +2,7 @@ package dc10.scala.predef.datatype
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.*
-import dc10.compiler.{Compiler, compile, toStrings}
+import dc10.compiler.{compile, toString}
 import munit.FunSuite
 
 import dc10.scala.dsl.{*, given}
@@ -17,11 +17,11 @@ class ComplexTypesSuite extends FunSuite:
 
     def ast = CASECLASS[Person, String]("Person", VAL("name", STRING))
     
-    val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toStrings["scala-3.3.0"]
+    val obtained: String =
+      ast.compile.toString["scala-3.3.0"]
       
-    val expected: Either[List[Compiler.Error], String] =
-      Right("""case class Person(val name: String)""".stripMargin)
+    val expected: String =
+      """case class Person(val name: String)""".stripMargin
       
     assertEquals(obtained, expected)
   
@@ -35,15 +35,14 @@ class ComplexTypesSuite extends FunSuite:
         _ <- VAL("l4", LIST(LIST(LIST(STRING))))
       yield ()
     
-    val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toStrings["scala-3.3.0"]
+    val obtained: String =
+      ast.compile.toString["scala-3.3.0"]
       
-    val expected: Either[List[Compiler.Error], String] =
-      Right("""|val l1: List[Int]
-               |val l2: List[String]
-               |val l3: List[List[String]]
-               |val l4: List[List[List[String]]]""".stripMargin
-      )
+    val expected: String =
+      """|val l1: List[Int]
+         |val l2: List[String]
+         |val l3: List[List[String]]
+         |val l4: List[List[List[String]]]""".stripMargin
       
     assertEquals(obtained, expected)
 
@@ -57,14 +56,13 @@ class ComplexTypesSuite extends FunSuite:
         _ <- VAL("l4", LIST(LIST(LIST(STRING))))(List(l, l))
       yield ()
     
-    val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toStrings["scala-3.3.0"]
+    val obtained: String =
+      ast.compile.toString["scala-3.3.0"]
       
-    val expected: Either[List[Compiler.Error], String] =
-      Right("""|val l1: List[Int] = List(1, 2, 3)
-               |val l2: List[String] = List("1", "2", "3")
-               |val l3: List[List[String]] = List(List("1", "2", "3"), List("4", "5", "6"))
-               |val l4: List[List[List[String]]] = List(l3, l3)""".stripMargin
-      )
+    val expected: String =
+      """|val l1: List[Int] = List(1, 2, 3)
+         |val l2: List[String] = List("1", "2", "3")
+         |val l3: List[List[String]] = List(List("1", "2", "3"), List("4", "5", "6"))
+         |val l4: List[List[List[String]]] = List(l3, l3)""".stripMargin
       
     assertEquals(obtained, expected)

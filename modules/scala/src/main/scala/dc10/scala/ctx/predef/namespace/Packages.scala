@@ -1,10 +1,9 @@
 package dc10.scala.ctx.predef.namespace
 
 import cats.data.StateT
-import dc10.compiler.Compiler
-import dc10.compiler.Compiler.ErrorF
 import dc10.scala.ast.Definition.Statement
 import dc10.scala.ast.Definition.Statement.PackageDef
+import dc10.scala.ctx.ErrorF
 import dc10.schema.FileDef
 import org.tpolecat.sourcepos.SourcePos
 

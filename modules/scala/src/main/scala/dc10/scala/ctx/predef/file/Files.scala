@@ -1,11 +1,10 @@
 package dc10.scala.ctx.predef.file
 
 import cats.data.StateT
-import dc10.compiler.Compiler
-import dc10.compiler.Compiler.ErrorF
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.Package
 import dc10.scala.ast.Definition.Statement
+import dc10.scala.ctx.ErrorF
 import dc10.scala.ctx.ext
 import dc10.schema.FileDef
 import java.nio.file.Path
