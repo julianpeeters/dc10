@@ -4,8 +4,7 @@ import cats.data.StateT
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.Term
 import dc10.scala.ast.Definition.Statement
-import dc10.compiler.Compiler.ErrorF
-import dc10.compiler.Compiler
+import dc10.scala.ctx.ErrorF
 
 trait PrimitiveTypes[F[_]]:
 

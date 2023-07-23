@@ -2,12 +2,12 @@ package dc10.scala.ctx.predef.datatype
 
 import cats.data.StateT
 import cats.implicits.*
-import dc10.compiler.Compiler
-import dc10.compiler.Compiler.ErrorF
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{CaseClass, Term}
 import dc10.scala.ast.Binding.Term.TypeLevel.__
 import dc10.scala.ast.Definition.Statement
+import dc10.scala.ctx.error.CompileError
+import dc10.scala.ctx.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
 
@@ -36,10 +36,10 @@ object ComplexTypes:
         (fields, a) <- StateT.liftF(fields.runEmpty)
         fs <- StateT.liftF(
           fields.traverse(field => field match
-            case d@Statement.RecordDef(_,_) => Left(???)
-            case d@Statement.ObjectDef(_,_,_)  => Left(???)
-            case d@Statement.PackageDef(_,_)   => Left(???)
-            case d@Statement.ValDef(_,_)       => Right[List[Compiler.Error], Statement.ValDef](d)
+            case d@Statement.RecordDef(_,_)   => Left(???)
+            case d@Statement.ObjectDef(_,_,_) => Left(???)
+            case d@Statement.PackageDef(_,_)  => Left(???)
+            case d@Statement.ValDef(_,_)      => Right[List[CompileError], Statement.ValDef](d)
           )
         )
         c <- StateT.pure(CaseClass[T](name, fs))

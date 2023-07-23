@@ -10,15 +10,12 @@ trait Compiler[A]:
 
 object Compiler:
   
-  type ErrorF[A] = Either[List[Compiler.Error], A]
-  sealed trait Error
-
   case class VirtualFile(path: Path, contents: String)
 
-  given compilerA[V, A] (
+  given compilerA[V, E, A] (
     using
       C: Config[V],
-      D: Renderer[V, A],
+      D: Renderer[V, E, A],
   ): Compiler[A] =
     new Compiler[A]:
       def generate(

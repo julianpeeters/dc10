@@ -1,10 +1,8 @@
 package dc10.scala.predef.datatype
 
 import _root_.scala.language.implicitConversions
-import dc10.compiler.Compiler
 
 import munit.FunSuite
-import dc10.scala.dsl
 
 class PrimitiveTypeSuite extends FunSuite:
   
@@ -12,7 +10,7 @@ class PrimitiveTypeSuite extends FunSuite:
   import dc10.scala.dsl.{*, given}
 
   // compile
-  import dc10.compiler.{compile, toStrings}
+  import dc10.compiler.{compile, toString}
   import dc10.scala.version.`3.3.0`
 
   test("val dec"):
@@ -27,21 +25,19 @@ class PrimitiveTypeSuite extends FunSuite:
         _ <- VAL("farewell", STRING)
       yield ()
     
-    val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toStrings["scala-3.3.0"]
+    val obtained: String =
+      ast.compile.toString["scala-3.3.0"]
       
-    val expected: Either[List[Compiler.Error], String] =
-      Right("""|val t: Boolean
-               |val f: Boolean
-               |val age: Int
-               |val year: Int
-               |val greeting: String
-               |val farewell: String""".stripMargin
-      )
+    val expected: String =
+      """|val t: Boolean
+         |val f: Boolean
+         |val age: Int
+         |val year: Int
+         |val greeting: String
+         |val farewell: String""".stripMargin
       
     assertEquals(obtained, expected)
 
-  
   test("val def"):
 
     def ast =
@@ -54,16 +50,15 @@ class PrimitiveTypeSuite extends FunSuite:
         _ <- VAL("farewell", STRING)("goodbye, world")
       yield ()
     
-    val obtained: Either[List[Compiler.Error], String] =
-      ast.compile.toStrings["scala-3.3.0"]
+    val obtained: String =
+      ast.compile.toString["scala-3.3.0"]
       
-    val expected: Either[List[Compiler.Error], String] =
-      Right("""|val t: Boolean = true
-               |val f: Boolean = false
-               |val age: Int = 101
-               |val year: Int = 2020
-               |val greeting: String = "hello, world"
-               |val farewell: String = "goodbye, world"""".stripMargin
-      )
+    val expected: String =
+      """|val t: Boolean = true
+         |val f: Boolean = false
+         |val age: Int = 101
+         |val year: Int = 2020
+         |val greeting: String = "hello, world"
+         |val farewell: String = "goodbye, world"""".stripMargin
       
     assertEquals(obtained, expected)
