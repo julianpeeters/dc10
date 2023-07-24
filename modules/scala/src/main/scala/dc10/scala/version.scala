@@ -8,11 +8,10 @@ import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{RecordDef, PackageDef, ValDef}
 import dc10.scala.error.CompileError
 
-given `3.3.0`: Renderer["scala-3.3.0", List[CompileError], List[Statement]] =
-  new Renderer["scala-3.3.0", List[CompileError], List[Statement]]:
+given `3.3.0`: Renderer["scala-3.3.0", CompileError, Statement[Binding]] =
+  new Renderer["scala-3.3.0", CompileError, Statement[Binding]]:
 
-
-    def render(input: List[Statement]): String = input.map(stmt => stmt match
+    def render(input: List[Statement[Binding]]): String = input.map(stmt => stmt match
       case d@RecordDef(_, _) =>
         s"case class ${d.caseclass.nme}(${render(d.caseclass.fields).mkString})"
       case d@Statement.ObjectDef(_, _, _) =>
@@ -32,8 +31,8 @@ given `3.3.0`: Renderer["scala-3.3.0", List[CompileError], List[Statement]] =
             )
     ).mkString("\n")
 
-    def renderError(error: List[CompileError]): String =
-      error.map(_.toString()).mkString("\n")
+    def renderErrors(errors: List[CompileError]): String =
+      errors.map(_.toString()).mkString("\n")
 
     override def version: "scala-3.3.0" =
       "scala-3.3.0"

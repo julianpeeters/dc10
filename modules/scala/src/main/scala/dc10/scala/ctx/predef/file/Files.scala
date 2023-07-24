@@ -16,19 +16,19 @@ trait Files[F[_], G[_]]:
 object Files:
 
   trait Mixins extends Files[
-    [A] =>> StateT[ErrorF, List[Statement], A],
-    [A] =>> StateT[ErrorF, List[FileSchema[List[Statement]]], A]
+    [A] =>> StateT[ErrorF, List[Statement[Binding]], A],
+    [A] =>> StateT[ErrorF, List[FileSchema[Statement[Binding]]], A]
     ]:
 
     def FILE[A](
       nme: String,
-      statements: StateT[ErrorF, List[Statement], A]
-    )(using sp: SourcePos): StateT[ErrorF, List[FileSchema[List[Statement]]], A] =
+      statements: StateT[ErrorF, List[Statement[Binding]], A]
+    )(using sp: SourcePos): StateT[ErrorF, List[FileSchema[Statement[Binding]]], A] =
       for
-        (ms, a) <- StateT.liftF[ErrorF, List[FileSchema[List[Statement]]], (List[Statement], A)](statements.runEmpty)
-        n <- StateT.pure[ErrorF, List[FileSchema[List[Statement]]], Path](Path.of(nme))
-        p <- StateT.pure[ErrorF, List[FileSchema[List[Statement]]], Statement.PackageDef](
+        (ms, a) <- StateT.liftF[ErrorF, List[FileSchema[Statement[Binding]]], (List[Statement[Binding]], A)](statements.runEmpty)
+        n <- StateT.pure[ErrorF, List[FileSchema[Statement[Binding]]], Path](Path.of(nme))
+        p <- StateT.pure[ErrorF, List[FileSchema[Statement[Binding]]], Statement.PackageDef](
           Statement.PackageDef(0, Package.Empty(ms)))
-        d <- StateT.pure[ErrorF, List[FileSchema[List[Statement]]], FileSchema[List[Statement]]](FileSchema[List[Statement]](n, List(p)))
-        _ <- StateT.modifyF[ErrorF, List[FileSchema[List[Statement]]]](ctx => ctx.ext(d))
+        d <- StateT.pure[ErrorF, List[FileSchema[Statement[Binding]]], FileSchema[Statement[Binding]]](FileSchema[Statement[Binding]](n, List(p)))
+        _ <- StateT.modifyF[ErrorF, List[FileSchema[Statement[Binding]]]](ctx => ctx.ext(d))
       yield a

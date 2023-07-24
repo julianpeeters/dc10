@@ -4,7 +4,7 @@ import dc10.scala.ast.Binding.{CaseClass, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
 
 
-sealed trait Statement:
+sealed trait Statement[T]:
   def indent: Int
   def sp: SourcePos
   
@@ -22,13 +22,13 @@ object Statement:
   //   pkg: Package,
   //   sp: SourcePos,
   //   indent: Int,
-  // ) extends Statement
+  // ) extends Statement[Binding]
 
 
   sealed abstract case class RecordDef(
     indent: Int,
     sp: SourcePos
-  ) extends Statement:
+  ) extends Statement[Binding]:
     type Tpe
     def caseclass: CaseClass[Tpe]
 
@@ -47,12 +47,12 @@ object Statement:
     module: Object,
     indent: Int,
     sp: SourcePos
-  ) extends Statement
+  ) extends Statement[Binding]
 
   sealed abstract case class PackageDef(
     indent: Int,
     sp: SourcePos
-  ) extends Statement:
+  ) extends Statement[Binding]:
     def pkg: Package
 
   object PackageDef:
@@ -68,7 +68,7 @@ object Statement:
   sealed abstract case class ValDef(
     indent: Int,
     sp: SourcePos
-  ) extends Statement:
+  ) extends Statement[Binding]:
     type Tpe
     def value: Term.ValueLevel.Var.UserDefinedValue[Tpe]
 

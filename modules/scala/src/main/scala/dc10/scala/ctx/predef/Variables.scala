@@ -16,38 +16,38 @@ trait Variables[F[_]]:
 
 object Variables:
 
-  trait Mixins extends Variables[[A] =>> StateT[ErrorF, List[Statement], A]]:
+  trait Mixins extends Variables[[A] =>> StateT[ErrorF, List[Statement[Binding]], A]]:
 
     def VAL[T](
       nme: String,
-      tpe: StateT[ErrorF, List[Statement], Term.TypeLevel[T]]
+      tpe: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[T]]
     )(
       using sp: SourcePos
-    ): StateT[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]] =
+    ): StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel.Var.UserDefinedValue[T]] =
       for
         t <- tpe
-        v <- StateT.pure[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]](
+        v <- StateT.pure[ErrorF, List[Statement[Binding]], Term.ValueLevel.Var.UserDefinedValue[T]](
           Term.ValueLevel.Var.UserDefinedValue(nme, t, None))
-        d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
-        _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
+        d <- StateT.pure[ErrorF, List[Statement[Binding]], ValDef](ValDef(v)(0))
+        _ <- StateT.modifyF[ErrorF, List[Statement[Binding]]](ctx => ctx.ext(d))
       yield v
 
     def VAL[T](
       nme: String,
-      tpe: StateT[ErrorF, List[Statement], Term.TypeLevel[T]]
+      tpe: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[T]]
     )( 
-      impl: StateT[ErrorF, List[Statement], Term.ValueLevel[T]]
-    )(using sp: SourcePos): StateT[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]] =
+      impl: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[T]]
+    )(using sp: SourcePos): StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel.Var.UserDefinedValue[T]] =
       for
         t <- tpe
         i <- impl
-        v <- StateT.pure[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]](
+        v <- StateT.pure[ErrorF, List[Statement[Binding]], Term.ValueLevel.Var.UserDefinedValue[T]](
           Term.ValueLevel.Var.UserDefinedValue(nme, t, Some(i)))
-        d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
-        _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
+        d <- StateT.pure[ErrorF, List[Statement[Binding]], ValDef](ValDef(v)(0))
+        _ <- StateT.modifyF[ErrorF, List[Statement[Binding]]](ctx => ctx.ext(d))
       yield v
 
-    given refV[T]: Conversion[Term.ValueLevel[T], StateT[ErrorF, List[Statement], Term.ValueLevel[T]]] =
+    given refV[T]: Conversion[Term.ValueLevel[T], StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[T]]] =
       StateT.pure
 
   
