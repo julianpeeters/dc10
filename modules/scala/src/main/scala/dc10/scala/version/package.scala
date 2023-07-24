@@ -4,12 +4,13 @@ import dc10.renderer.Renderer
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{Package, Term}
 import dc10.scala.ast.Binding.Package.{Basic, Empty}
-import dc10.scala.ast.Definition.Statement
-import dc10.scala.ast.Definition.Statement.{RecordDef, PackageDef, ValDef}
+import dc10.scala.ast.Statement
+import dc10.scala.ast.Statement.{RecordDef, PackageDef, ValDef}
 import dc10.scala.error.CompileError
 
 given `3.3.0`: Renderer["scala-3.3.0", List[CompileError], List[Statement]] =
   new Renderer["scala-3.3.0", List[CompileError], List[Statement]]:
+
 
     def render(input: List[Statement]): String = input.map(stmt => stmt match
       case d@RecordDef(_, _) =>

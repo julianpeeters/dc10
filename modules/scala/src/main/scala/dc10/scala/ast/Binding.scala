@@ -2,7 +2,6 @@ package dc10.scala.ast
 
 import java.nio.file.Path
 import dc10.scala.ast.Binding.Term.ValueLevel
-import dc10.scala.ast.Definition.Statement
 
 sealed trait Binding
 

@@ -3,8 +3,8 @@ package dc10.scala.ctx.predef
 import cats.data.StateT
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.Term
-import dc10.scala.ast.Definition.Statement
-import dc10.scala.ast.Definition.Statement.ValDef
+import dc10.scala.ast.Statement
+import dc10.scala.ast.Statement.ValDef
 import dc10.scala.ctx.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos

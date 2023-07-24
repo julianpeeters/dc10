@@ -3,7 +3,7 @@ package dc10.scala.ctx.predef.datatype
 import cats.data.StateT
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.Term
-import dc10.scala.ast.Definition.Statement
+import dc10.scala.ast.Statement
 import dc10.scala.ctx.ErrorF
 
 trait PrimitiveTypes[F[_]]:

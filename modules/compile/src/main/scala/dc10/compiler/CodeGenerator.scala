@@ -2,24 +2,24 @@ package dc10.compiler
 
 import cats.implicits.*
 import dc10.renderer.Renderer
-import dc10.schema.FileDef
+import dc10.schema.FileSchema
 import java.nio.file.Path
 
-trait Compiler[A]:
-  def generate(input: List[FileDef[A]]): List[Compiler.VirtualFile]
+trait CodeGenerator[A]:
+  def generate(input: List[FileSchema[A]]): List[CodeGenerator.VirtualFile]
 
-object Compiler:
+object CodeGenerator:
   
   case class VirtualFile(path: Path, contents: String)
 
-  given compilerA[V, E, A] (
+  given codeGenerator[V, E, A] (
     using
       C: Config[V],
       D: Renderer[V, E, A],
-  ): Compiler[A] =
-    new Compiler[A]:
+  ): CodeGenerator[A] =
+    new CodeGenerator[A]:
       def generate(
-        input: List[FileDef[A]],
+        input: List[FileSchema[A]],
       ): List[VirtualFile] =
           input.map(fileDef =>
             VirtualFile(
