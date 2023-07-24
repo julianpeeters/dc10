@@ -1,6 +1,6 @@
 package dc10.scala.version
 
-import dc10.renderer.Renderer
+import dc10.compiler.Renderer
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{Package, Term}
 import dc10.scala.ast.Binding.Package.{Basic, Empty}
@@ -8,10 +8,11 @@ import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{RecordDef, PackageDef, ValDef}
 import dc10.scala.error.CompileError
 
-given `3.3.0`: Renderer["scala-3.3.0", CompileError, Statement[Binding]] =
-  new Renderer["scala-3.3.0", CompileError, Statement[Binding]]:
+  
+given `3.3.0`: Renderer["scala-3.3.0", CompileError, Statement] =
+  new Renderer["scala-3.3.0", CompileError, Statement]:
 
-    def render(input: List[Statement[Binding]]): String = input.map(stmt => stmt match
+    def render(input: List[Statement]): String = input.map(stmt => stmt match
       case d@RecordDef(_, _) =>
         s"case class ${d.caseclass.nme}(${render(d.caseclass.fields).mkString})"
       case d@Statement.ObjectDef(_, _, _) =>

@@ -24,28 +24,28 @@ trait Applications[F[_]]:
 
 object Applications:
 
-  trait Mixins extends Applications[[A] =>> StateT[ErrorF, List[Statement[Binding]], A]]:
+  trait Mixins extends Applications[[A] =>> StateT[ErrorF, List[Statement], A]]:
 
-    extension [T[_]] (tfunction: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[T[__]]])
+    extension [T[_]] (tfunction: StateT[ErrorF, List[Statement], Term.TypeLevel[T[__]]])
       @scala.annotation.targetName("app1T")
-      def apply[A](targs: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[A]]): StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[T[A]]] =
+      def apply[A](targs: StateT[ErrorF, List[Statement], Term.TypeLevel[A]]): StateT[ErrorF, List[Statement], Term.TypeLevel[T[A]]] =
         for
           f <- tfunction
           a <- targs
         yield Term.TypeLevel.App1[T, A](f, a)
 
-    extension [T[_,_]] (tfunction: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel.Lam2[T]])
+    extension [T[_,_]] (tfunction: StateT[ErrorF, List[Statement], Term.TypeLevel.Lam2[T]])
       @scala.annotation.targetName("app2T")
-      def apply[A, B](fta: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[A]])(ftb: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[B]]): StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[T[A, B]]] =
+      def apply[A, B](fta: StateT[ErrorF, List[Statement], Term.TypeLevel[A]])(ftb: StateT[ErrorF, List[Statement], Term.TypeLevel[B]]): StateT[ErrorF, List[Statement], Term.TypeLevel[T[A, B]]] =
         for
           f <- tfunction
           a <- fta
           b <- ftb
         yield Term.TypeLevel.App2[T, A, B](f, a, b)
 
-    extension [A, B] (function: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[A => B]])
+    extension [A, B] (function: StateT[ErrorF, List[Statement], Term.ValueLevel[A => B]])
       @scala.annotation.targetName("app1V")
-      def apply(args: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[A]]): StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[B]] =
+      def apply(args: StateT[ErrorF, List[Statement], Term.ValueLevel[A]]): StateT[ErrorF, List[Statement], Term.ValueLevel[B]] =
         for
           f <- function
           a <- args
