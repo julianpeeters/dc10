@@ -2,12 +2,11 @@ package dc10.scala.predef.datatype
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.*
-import dc10.compiler.{compile, toString}
 import munit.FunSuite
 
+import dc10.scala.compiler.{compile, toString}
 import dc10.scala.dsl.{*, given}
 import dc10.scala.version.`3.3.0`
-import dc10.scala.dsl
 
 class ComplexTypesSuite extends FunSuite:
 

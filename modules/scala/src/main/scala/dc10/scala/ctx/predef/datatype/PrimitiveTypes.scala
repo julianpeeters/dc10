@@ -3,7 +3,7 @@ package dc10.scala.ctx.predef.datatype
 import cats.data.StateT
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.Term
-import dc10.scala.ast.Definition.Statement
+import dc10.scala.ast.Statement
 import dc10.scala.ctx.ErrorF
 
 trait PrimitiveTypes[F[_]]:
@@ -19,31 +19,31 @@ trait PrimitiveTypes[F[_]]:
   
 object PrimitiveTypes:
 
-  trait Mixins extends PrimitiveTypes[[A] =>> StateT[ErrorF, List[Statement], A]]:
+  trait Mixins extends PrimitiveTypes[[A] =>> StateT[ErrorF, List[Statement[Binding]], A]]:
 
-    def BOOLEAN: StateT[ErrorF, List[Statement], Term.TypeLevel[Boolean]] =
+    def BOOLEAN: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[Boolean]] =
       StateT.pure(Term.TypeLevel.Var.BooleanType)
       
     given bLit: Conversion[
       Boolean,
-      StateT[ErrorF, List[Statement], Term.ValueLevel[Boolean]]
+      StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[Boolean]]
     ] =
       v => StateT.pure(Term.ValueLevel.Var.BooleanLiteral(v))
 
-    def INT: StateT[ErrorF, List[Statement], Term.TypeLevel[Int]] =
+    def INT: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[Int]] =
       StateT.pure(Term.TypeLevel.Var.IntType)
 
     given iLit: Conversion[
       Int,
-      StateT[ErrorF, List[Statement], Term.ValueLevel[Int]]
+      StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[Int]]
     ] =
       v => StateT.pure(Term.ValueLevel.Var.IntLiteral(v))
 
-    def STRING: StateT[ErrorF, List[Statement], Term.TypeLevel[String]] =
+    def STRING: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[String]] =
       StateT.pure(Term.TypeLevel.Var.StringType)
     
     given sLit: Conversion[
       String,
-      StateT[ErrorF, List[Statement], Term.ValueLevel[String]]
+      StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[String]]
     ] =
       v => StateT.pure(Term.ValueLevel.Var.StringLiteral(v))

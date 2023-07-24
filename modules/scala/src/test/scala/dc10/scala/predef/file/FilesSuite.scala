@@ -3,7 +3,7 @@ package dc10.scala.predef.file
 import _root_.scala.language.implicitConversions
 
 import munit.FunSuite
-import dc10.scala.ctx.error.CompileError
+import dc10.scala.error.CompileError
 import dc10.scala.dsl
 
 class PrimitiveTypeSuite extends FunSuite:
@@ -12,7 +12,7 @@ class PrimitiveTypeSuite extends FunSuite:
   import dc10.scala.dsl.* 
 
   // compile
-  import dc10.compiler.{compile, toVirtualFile}
+  import dc10.scala.compiler.{compile, toVirtualFile}
   import dc10.scala.version.`3.3.0`
 
   test("val dec"):

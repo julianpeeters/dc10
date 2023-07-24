@@ -2,7 +2,6 @@ package dc10.scala.ast
 
 import java.nio.file.Path
 import dc10.scala.ast.Binding.Term.ValueLevel
-import dc10.scala.ast.Definition.Statement
 
 sealed trait Binding
 
@@ -14,7 +13,7 @@ object Binding:
     def nme: String
     def tpe: Term.TypeLevel[T]
     def fields: List[Statement.ValDef]
-    def body: List[Statement]
+    def body: List[Statement[Binding]]
     // def ctor: Term.ValueLevel[A => T]
 
   object CaseClass:
@@ -41,7 +40,7 @@ object Binding:
           case Basic(nme, nst) => Path.of(nme).resolve(nst.pkg.getPath)
           case Empty(ms) => Path.of("")
 
-      def addMember(stmt: Statement): Package =
+      def addMember(stmt: Statement[Binding]): Package =
         pkg match
           case Basic(nme, nst) => nst.pkg.addMember(stmt)
           case Empty(ms) => Empty(ms :+ stmt)
@@ -52,7 +51,7 @@ object Binding:
     ) extends Package
 
     case class Empty(
-      ms : List[Statement]
+      ms : List[Statement[Binding]]
     ) extends Package
 
   // Term ///////////////////////////////////////////////////////////////

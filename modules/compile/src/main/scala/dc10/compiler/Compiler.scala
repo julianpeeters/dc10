@@ -1,29 +1,25 @@
 package dc10.compiler
 
-import cats.implicits.*
+import cats.kernel.Monoid
 import dc10.renderer.Renderer
-import dc10.schema.FileDef
-import java.nio.file.Path
+import dc10.schema.FileSchema
 
-trait Compiler[A]:
-  def generate(input: List[FileDef[A]]): List[Compiler.VirtualFile]
+trait Compiler[F[_]]:
 
-object Compiler:
+  type Ctx[_[_], _, _]
+  type Defn[_]
+  type Ent
+  type Err
   
-  case class VirtualFile(path: Path, contents: String)
+  extension [L: Monoid, A] (ast: Ctx[F, L, A])
+    def compile: F[L]
 
-  given compilerA[V, E, A] (
-    using
-      C: Config[V],
-      D: Renderer[V, E, A],
-  ): Compiler[A] =
-    new Compiler[A]:
-      def generate(
-        input: List[FileDef[A]],
-      ): List[VirtualFile] =
-          input.map(fileDef =>
-            VirtualFile(
-              fileDef.path,
-              D.render(fileDef.contents)
-            )
-          )
+  extension (res: F[List[Defn[Ent]]])
+    def toString[V](using R: Renderer[V, Err, Defn[Ent]]): String
+
+  extension (res: F[List[Defn[Ent]]])
+    def toStringOrError[V](using R: Renderer[V, Err, Defn[Ent]]): F[String]
+
+  extension (res: F[List[FileSchema[Defn[Ent]]]])
+    def toVirtualFile[V](using C: CodeGenerator[Defn[Ent]]): F[List[CodeGenerator.VirtualFile]]
+
