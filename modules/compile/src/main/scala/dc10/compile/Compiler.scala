@@ -1,7 +1,6 @@
-package dc10.compiler
+package dc10.compile
 
 import cats.kernel.Monoid
-import java.nio.file.Path
 
 trait Compiler[F[_]]:
 
@@ -21,8 +20,4 @@ trait Compiler[F[_]]:
     def toStringOrError[V](using R: Renderer[V, Err, Defn]): F[String]
 
   extension (res: F[List[Src]])
-    def toVirtualFile[V](using R: Renderer[V, Err, Defn]): F[List[Compiler.VirtualFile]]
-
-object Compiler:
-  
-  case class VirtualFile(path: Path, contents: String)
+    def toVirtualFile[V](using R: Renderer[V, Err, Defn]): F[List[VirtualFile]]

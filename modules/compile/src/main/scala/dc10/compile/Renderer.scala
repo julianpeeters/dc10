@@ -1,4 +1,4 @@
-package dc10.compiler
+package dc10.compile
 
 trait Renderer[V, E, A]:
   def render(input: List[A]): String

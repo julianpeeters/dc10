@@ -1,4 +1,4 @@
-package dc10.compiler
+package dc10.compile
 
 import java.nio.file.Path
 

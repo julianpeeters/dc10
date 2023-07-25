@@ -1,6 +1,6 @@
 package dc10.scala.version
 
-import dc10.compiler.Renderer
+import dc10.compile.Renderer
 import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{Package, Term}
 import dc10.scala.ast.Binding.Package.{Basic, Empty}

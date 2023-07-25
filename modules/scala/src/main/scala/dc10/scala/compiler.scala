@@ -2,8 +2,8 @@ package dc10.scala
 
 import cats.data.StateT
 import cats.kernel.Monoid
-import dc10.compiler.{Compiler, Renderer}
-import dc10.compiler.Compiler.VirtualFile
+import dc10.compile.{Compiler, Renderer}
+import dc10.compile.VirtualFile
 import dc10.scala.ast.{Binding, Statement}
 import dc10.scala.file.ScalaFile
 import dc10.scala.error.CompileError
