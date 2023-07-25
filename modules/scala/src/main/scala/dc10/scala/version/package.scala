@@ -9,8 +9,8 @@ import dc10.scala.ast.Statement.{RecordDef, PackageDef, ValDef}
 import dc10.scala.error.CompileError
 
   
-given `3.3.0`: Renderer["scala-3.3.0", CompileError, Statement] =
-  new Renderer["scala-3.3.0", CompileError, Statement]:
+given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
+  new Renderer["scala-3.3.0", CompileError, List[Statement]]:
 
     def render(input: List[Statement]): String = input.map(stmt => stmt match
       case d@RecordDef(_, _) =>
