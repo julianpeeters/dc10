@@ -2,21 +2,22 @@ package dc10.scala
 
 import cats.data.StateT
 import cats.kernel.Monoid
-import dc10.compiler.{CodeGenerator, Compiler, Renderer}
-import dc10.compiler.CodeGenerator.{VirtualAst, VirtualFile}
+import dc10.compiler.{Compiler, Renderer}
+import dc10.compiler.Compiler.VirtualFile
 import dc10.scala.ast.{Binding, Statement}
+import dc10.scala.file.ScalaFile
 import dc10.scala.error.CompileError
 
-type Γ = List[Statement]
 type ErrorF[A] = Either[List[CompileError], A]
+type Γ = List[Statement]
 
-object compiler extends Compiler[ErrorF]:
+implicit object compiler extends Compiler[ErrorF]:
 
   type Ctx[F[_], L, A] = StateT[ErrorF, L, A]
-
   type Defn = Statement
   type Ent = Binding
   type Err = CompileError
+  type Src = ScalaFile
 
   extension [L: Monoid, A] (ast: StateT[ErrorF, L, A])
     def compile: ErrorF[L] =
@@ -30,7 +31,13 @@ object compiler extends Compiler[ErrorF]:
     def toStringOrError[V](using R: Renderer[V, CompileError, Statement]): Either[List[CompileError], String] =
       res.map(R.render)
 
-  extension (res: Either[List[CompileError], List[VirtualAst[Statement]]])
-    def toVirtualFile[V](using C: CodeGenerator[Statement]): Either[List[CompileError], List[VirtualFile]] =
-      res.map(C.generate)
-
+  extension (res: Either[List[CompileError], List[ScalaFile]])
+    def toVirtualFile[V](using R: Renderer[V, CompileError, Statement]): Either[List[CompileError], List[VirtualFile]] =
+      for
+        fds <- res
+      yield fds.map(fileDef =>
+          VirtualFile(
+            fileDef.path,
+            R.render(fileDef.contents)
+          )
+        )
