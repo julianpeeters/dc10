@@ -1,22 +1,22 @@
 package dc10.scala.ctx
 
 import cats.{Applicative, Functor}
-import dc10.scala.ast.{Binding, Statement}
+import dc10.scala.ast.Statement
 import dc10.scala.error.CompileError
-import dc10.schema.FileSchema
+import dc10.scala.file.ScalaFile
 
 type ErrorF[A] = Either[List[CompileError], A]
 
-extension [F[_]: Applicative: Functor](ctx: List[Statement[Binding]])
-  def ext(s: Statement[Binding]): F[List[Statement[Binding]]] =
+extension [F[_]: Applicative: Functor](ctx: List[Statement])
+  def ext(s: Statement): F[List[Statement]] =
     Functor[F].map(namecheck(s))(ctx :+ _)
-  def namecheck(s: Statement[Binding]): F[Statement[Binding]] =
+  def namecheck(s: Statement): F[Statement] =
     // TODO
     Applicative[F].pure(s)
 
-extension [F[_]: Applicative: Functor] (ctx: List[FileSchema[Statement[Binding]]])
-  def ext(s: FileSchema[Statement[Binding]]): F[List[FileSchema[Statement[Binding]]]] =
+extension [F[_]: Applicative: Functor] (ctx: List[ScalaFile])
+  def ext(s: ScalaFile): F[List[ScalaFile]] =
     Functor[F].map(namecheck(s))(ctx :+ _)
-  def namecheck(s: FileSchema[Statement[Binding]]): F[FileSchema[Statement[Binding]]] =
+  def namecheck(s: ScalaFile): F[ScalaFile] =
     // TODO
     Applicative[F].pure(s)

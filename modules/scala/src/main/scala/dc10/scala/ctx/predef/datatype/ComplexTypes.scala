@@ -22,16 +22,16 @@ trait ComplexTypes[F[_]]:
 
 object ComplexTypes:
 
-  trait Mixins extends ComplexTypes[[A] =>> StateT[ErrorF, List[Statement[Binding]], A]]:
+  trait Mixins extends ComplexTypes[[A] =>> StateT[ErrorF, List[Statement], A]]:
  
     @scala.annotation.targetName("caseClass1")
     def CASECLASS[T, A](
       name: String,
-      fields: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel.Var.UserDefinedValue[A]]
+      fields: StateT[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[A]]
     )(
       using
         sp: SourcePos
-    ): StateT[ErrorF, List[Statement[Binding]], (Term.TypeLevel[T], Term.ValueLevel[A => T])] =
+    ): StateT[ErrorF, List[Statement], (Term.TypeLevel[T], Term.ValueLevel[A => T])] =
       for
         (fields, a) <- StateT.liftF(fields.runEmpty)
         fs <- StateT.liftF(
@@ -46,18 +46,18 @@ object ComplexTypes:
         f <- StateT.pure(Term.ValueLevel.Lam1(a, Term.ValueLevel.AppCtor1(c.tpe, a)))
         v <- StateT.pure(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.tpe, c.tpe), Some(f)))
         d <- StateT.pure(Statement.RecordDef(c, 0))
-        _ <- StateT.modifyF[ErrorF, List[Statement[Binding]]](ctx => ctx.ext(d))
+        _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield (c.tpe, v)
 
-    def LIST: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[List[__]]] =
+    def LIST: StateT[ErrorF, List[Statement], Term.TypeLevel[List[__]]] =
       StateT.pure(Term.TypeLevel.Var.ListType)
       
-    def List[A]: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[List[A] => List[A]]] =
+    def List[A]: StateT[ErrorF, List[Statement], Term.ValueLevel[List[A] => List[A]]] =
       StateT.pure(Term.ValueLevel.Var.ListCtor[A]())
     
-    extension [A] (list: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[List[A] => List[A]]])
+    extension [A] (list: StateT[ErrorF, List[Statement], Term.ValueLevel[List[A] => List[A]]])
       @scala.annotation.targetName("appVL")
-      def apply(args: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[A]]*): StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[List[A]]] =
+      def apply(args: StateT[ErrorF, List[Statement], Term.ValueLevel[A]]*): StateT[ErrorF, List[Statement], Term.ValueLevel[List[A]]] =
         for
           l <- list
           a <- args.toList.sequence

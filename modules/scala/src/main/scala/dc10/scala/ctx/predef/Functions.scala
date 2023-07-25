@@ -19,24 +19,24 @@ trait Functions[F[_]]:
 
 object Functions:
 
-  trait Mixins extends Functions[[A] =>> StateT[ErrorF, List[Statement[Binding]], A]]:
+  trait Mixins extends Functions[[A] =>> StateT[ErrorF, List[Statement], A]]:
  
-    extension [A, B] (domain: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[A]])
+    extension [A, B] (domain: StateT[ErrorF, List[Statement], Term.TypeLevel[A]])
       @scala.annotation.targetName("fun1T")
       def ==>(
-        codomain: StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[B]]
-      ): StateT[ErrorF, List[Statement[Binding]], Term.TypeLevel[A => B]] =
+        codomain: StateT[ErrorF, List[Statement], Term.TypeLevel[B]]
+      ): StateT[ErrorF, List[Statement], Term.TypeLevel[A => B]] =
         for
           a <- domain
           b <- codomain
           v <- StateT.pure(Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a, b))
         yield v
 
-    extension [A, B] (fa: StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel.Var.UserDefinedValue[A]])
+    extension [A, B] (fa: StateT[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[A]])
       @scala.annotation.targetName("fun1V")
       def ==>(
-        f: Term.ValueLevel[A] => StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[B]]
-      ): StateT[ErrorF, List[Statement[Binding]], Term.ValueLevel[A => B]] =
+        f: Term.ValueLevel[A] => StateT[ErrorF, List[Statement], Term.ValueLevel[B]]
+      ): StateT[ErrorF, List[Statement], Term.ValueLevel[A => B]] =
         for
           a <- StateT.liftF(fa.runEmptyA)
           b <- f(a)

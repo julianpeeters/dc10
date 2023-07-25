@@ -1,36 +1,43 @@
 package dc10.scala
 
 import cats.data.StateT
-import dc10.compiler.{CodeGenerator, Compiler}
-import dc10.renderer.Renderer
-import dc10.scala.ast.{Binding, Statement}
-import dc10.scala.error.CompileError
-import dc10.schema.FileSchema
 import cats.kernel.Monoid
+import dc10.compiler.{Compiler, Renderer}
+import dc10.compiler.Compiler.VirtualFile
+import dc10.scala.ast.{Binding, Statement}
+import dc10.scala.file.ScalaFile
+import dc10.scala.error.CompileError
 
-type Γ = List[Statement[Binding]]
 type ErrorF[A] = Either[List[CompileError], A]
+type Γ = List[Statement]
 
-object compiler extends Compiler[ErrorF]:
+implicit object compiler extends Compiler[ErrorF]:
 
   type Ctx[F[_], L, A] = StateT[ErrorF, L, A]
-  type Defn[A] = Statement[A]
+  type Defn = Statement
   type Ent = Binding
   type Err = CompileError
+  type Src = ScalaFile
 
   extension [L: Monoid, A] (ast: StateT[ErrorF, L, A])
     def compile: ErrorF[L] =
       ast.runEmptyS
 
   extension (res: Either[List[CompileError], Γ])
-    def toString[V](using R: Renderer[V, CompileError, Statement[Binding]]): String =
+    def toString[V](using R: Renderer[V, CompileError, Statement]): String =
       res.fold(R.renderErrors, R.render)
 
   extension (res: Either[List[CompileError], Γ])
-    def toStringOrError[V](using R: Renderer[V, CompileError, Statement[Binding]]): Either[List[CompileError], String] =
+    def toStringOrError[V](using R: Renderer[V, CompileError, Statement]): Either[List[CompileError], String] =
       res.map(R.render)
 
-  extension (res: Either[List[CompileError], List[FileSchema[Statement[Binding]]]])
-    def toVirtualFile[V](using C: CodeGenerator[Statement[Binding]]): Either[List[CompileError], List[CodeGenerator.VirtualFile]] =
-      res.map(C.generate)
-
+  extension (res: Either[List[CompileError], List[ScalaFile]])
+    def toVirtualFile[V](using R: Renderer[V, CompileError, Statement]): Either[List[CompileError], List[VirtualFile]] =
+      for
+        fds <- res
+      yield fds.map(fileDef =>
+          VirtualFile(
+            fileDef.path,
+            R.render(fileDef.contents)
+          )
+        )

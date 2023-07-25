@@ -1,25 +1,28 @@
 package dc10.compiler
 
 import cats.kernel.Monoid
-import dc10.renderer.Renderer
-import dc10.schema.FileSchema
+import java.nio.file.Path
 
 trait Compiler[F[_]]:
 
-  type Ctx[_[_], _, _]
-  type Defn[_]
-  type Ent
-  type Err
+  type Ctx[_[_], _, _]  // Monadic context, in which to build up ASTs and then compile them.
+  type Defn             // Definition level, representing introduction into the context.
+  type Ent              // Entity level, i.e., all sorts, to be expressed, defined, and referenced.
+  type Err              // Error type, parameterizing the context and the evaluation results.
+  type Src              // File level, representing a source file with path and ast.
   
   extension [L: Monoid, A] (ast: Ctx[F, L, A])
     def compile: F[L]
 
-  extension (res: F[List[Defn[Ent]]])
-    def toString[V](using R: Renderer[V, Err, Defn[Ent]]): String
+  extension (res: F[List[Defn]])
+    def toString[V](using R: Renderer[V, Err, Defn]): String
 
-  extension (res: F[List[Defn[Ent]]])
-    def toStringOrError[V](using R: Renderer[V, Err, Defn[Ent]]): F[String]
+  extension (res: F[List[Defn]])
+    def toStringOrError[V](using R: Renderer[V, Err, Defn]): F[String]
 
-  extension (res: F[List[FileSchema[Defn[Ent]]]])
-    def toVirtualFile[V](using C: CodeGenerator[Defn[Ent]]): F[List[CodeGenerator.VirtualFile]]
+  extension (res: F[List[Src]])
+    def toVirtualFile[V](using R: Renderer[V, Err, Defn]): F[List[Compiler.VirtualFile]]
 
+object Compiler:
+  
+  case class VirtualFile(path: Path, contents: String)

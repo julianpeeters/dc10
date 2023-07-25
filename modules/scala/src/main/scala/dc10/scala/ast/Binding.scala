@@ -13,7 +13,7 @@ object Binding:
     def nme: String
     def tpe: Term.TypeLevel[T]
     def fields: List[Statement.ValDef]
-    def body: List[Statement[Binding]]
+    def body: List[Statement]
     // def ctor: Term.ValueLevel[A => T]
 
   object CaseClass:
@@ -40,7 +40,7 @@ object Binding:
           case Basic(nme, nst) => Path.of(nme).resolve(nst.pkg.getPath)
           case Empty(ms) => Path.of("")
 
-      def addMember(stmt: Statement[Binding]): Package =
+      def addMember(stmt: Statement): Package =
         pkg match
           case Basic(nme, nst) => nst.pkg.addMember(stmt)
           case Empty(ms) => Empty(ms :+ stmt)
@@ -51,7 +51,7 @@ object Binding:
     ) extends Package
 
     case class Empty(
-      ms : List[Statement[Binding]]
+      ms : List[Statement]
     ) extends Package
 
   // Term ///////////////////////////////////////////////////////////////
