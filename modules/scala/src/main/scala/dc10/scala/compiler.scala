@@ -9,11 +9,10 @@ import dc10.scala.file.ScalaFile
 import dc10.scala.error.CompileError
 
 type ErrorF[A] = Either[List[CompileError], A]
-type Γ = List[Statement]
 
 implicit object compiler extends Compiler[ErrorF]:
 
-  type Ctx[F[_], L, A] = StateT[ErrorF, L, A]
+  type Ctx[F[_], L, A] = StateT[F, L, A]
   type Defn = Statement
   type Ent = Binding
   type Err = CompileError
@@ -23,16 +22,22 @@ implicit object compiler extends Compiler[ErrorF]:
     def compile: ErrorF[L] =
       ast.runEmptyS
 
-  extension (res: Either[List[CompileError], Γ])
-    def toString[V](using R: Renderer[V, CompileError, Statement]): String =
+  extension (res: ErrorF[List[Statement]])
+    def toString[V](
+      using R: Renderer[V, CompileError, Statement]
+    ): String =
       res.fold(R.renderErrors, R.render)
 
-  extension (res: Either[List[CompileError], Γ])
-    def toStringOrError[V](using R: Renderer[V, CompileError, Statement]): Either[List[CompileError], String] =
+  extension (res: ErrorF[List[Statement]])
+    def toStringOrError[V](
+      using R: Renderer[V, CompileError, Statement]
+    ): ErrorF[String] =
       res.map(R.render)
 
-  extension (res: Either[List[CompileError], List[ScalaFile]])
-    def toVirtualFile[V](using R: Renderer[V, CompileError, Statement]): Either[List[CompileError], List[VirtualFile]] =
+  extension (res: ErrorF[List[ScalaFile]])
+    def toVirtualFile[V](
+      using R: Renderer[V, CompileError, Statement]
+    ): ErrorF[List[VirtualFile]] =
       for
         fds <- res
       yield fds.map(fileDef =>
