@@ -13,7 +13,7 @@ type ErrorF[A] = Either[List[CompileError], A]
 implicit object compiler extends Compiler[ErrorF, List]:
 
   type Ctx[F[_], L, A] = StateT[F, L, A]
-  type Defn = Statement
+  type Def = Statement
   type Err = CompileError
   type Fil = ScalaFile
 
