@@ -4,7 +4,7 @@ import cats.data.StateT
 import cats.kernel.Monoid
 import dc10.compile.{Compiler, Renderer}
 import dc10.compile.VirtualFile
-import dc10.scala.ast.{Binding, Statement}
+import dc10.scala.ast.Statement
 import dc10.scala.file.ScalaFile
 import dc10.scala.error.CompileError
 
@@ -14,9 +14,8 @@ implicit object compiler extends Compiler[ErrorF, List]:
 
   type Ctx[F[_], L, A] = StateT[F, L, A]
   type Defn = Statement
-  type Ent = Binding
   type Err = CompileError
-  type Src = ScalaFile
+  type Fil = ScalaFile
 
   extension [L: Monoid, A] (ast: StateT[ErrorF, L, A])
     def compile: ErrorF[L] =
