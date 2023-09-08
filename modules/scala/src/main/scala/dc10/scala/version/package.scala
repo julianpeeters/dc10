@@ -1,8 +1,8 @@
 package dc10.scala.version
 
 import dc10.compile.Renderer
-import dc10.scala.ast.Binding.Package.{Basic, Empty}
-import dc10.scala.ast.Binding.Term
+import dc10.scala.ast.Symbol.Package.{Basic, Empty}
+import dc10.scala.ast.Symbol.Term
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{CaseClassDef, PackageDef, ValDef, Expr}
 import dc10.scala.ast.Statement.Expr.{BuiltInType, BuiltInValue, UserType, UserValue}

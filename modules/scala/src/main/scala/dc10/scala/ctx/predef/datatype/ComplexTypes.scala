@@ -2,9 +2,9 @@ package dc10.scala.ctx.predef.datatype
 
 import cats.data.StateT
 import cats.implicits.*
-import dc10.scala.ast.Binding.{CaseClass, Term}
-import dc10.scala.ast.Binding.Term.TypeLevel.__
-import dc10.scala.ast.Binding.Term.ValueLevel
+import dc10.scala.ast.Symbol.{CaseClass, Term}
+import dc10.scala.ast.Symbol.Term.TypeLevel.__
+import dc10.scala.ast.Symbol.Term.ValueLevel
 import dc10.scala.ast.Statement
 import dc10.scala.error.CompileError
 import dc10.scala.ctx.ErrorF

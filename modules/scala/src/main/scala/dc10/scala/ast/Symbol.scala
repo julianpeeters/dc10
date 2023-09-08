@@ -1,15 +1,15 @@
 package dc10.scala.ast
 
 import java.nio.file.Path
-import dc10.scala.ast.Binding.Term.{TypeLevel, ValueLevel}
+import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
 import dc10.scala.ast.Statement.Expr
 
-sealed trait Binding
+sealed trait Symbol
 
-object Binding:
+object Symbol:
 
   // Templates ////////////////////////////////////////////////////////////////
-  sealed abstract class CaseClass[T] extends Binding:
+  sealed abstract class CaseClass[T] extends Symbol:
     type Tpe = T
     def nme: String
     def tpe: Expr[TypeLevel, T]
@@ -29,7 +29,7 @@ object Binding:
         def body = Nil
 
   // Package //////////////////////////////////////////////////////////////////
-  sealed abstract class Package extends Binding
+  sealed abstract class Package extends Symbol
 
   object Package:
 
@@ -54,7 +54,7 @@ object Binding:
     ) extends Package
 
   // Term ///////////////////////////////////////////////////////////////
-  sealed abstract class Term extends Binding
+  sealed abstract class Term extends Symbol
 
   object Term:
 

@@ -1,8 +1,8 @@
 package dc10.scala.ast
 
-import dc10.scala.ast.Binding.{CaseClass, Package, Term}
+import Symbol.{CaseClass, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
-import dc10.scala.ast.Binding.Term.ValueLevel
+import Symbol.Term.ValueLevel
 
 
 sealed trait Statement:
