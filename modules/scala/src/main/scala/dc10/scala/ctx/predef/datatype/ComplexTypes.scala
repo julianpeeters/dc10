@@ -2,23 +2,24 @@ package dc10.scala.ctx.predef.datatype
 
 import cats.data.StateT
 import cats.implicits.*
-import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.{CaseClass, Term}
 import dc10.scala.ast.Binding.Term.TypeLevel.__
+import dc10.scala.ast.Binding.Term.ValueLevel
 import dc10.scala.ast.Statement
 import dc10.scala.error.CompileError
 import dc10.scala.ctx.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
+import dc10.scala.ast.Statement.Expr
 
 trait ComplexTypes[F[_]]:
   @scala.annotation.targetName("caseClass1")
-  def CASECLASS[T, A](name: String, fields: F[Term.ValueLevel.Var.UserDefinedValue[A]])(using sp: SourcePos): F[(Term.TypeLevel[T], Term.ValueLevel[A => T])]
-  def LIST: F[Term.TypeLevel[List[__]]]
-  def List[A]: F[Term.ValueLevel[List[A] => List[A]]]
-  extension [A] (list: F[Term.ValueLevel[List[A] => List[A]]])
+  def CASECLASS[T, A](name: String, fields: F[Expr[Term.ValueLevel.Var.UserDefinedValue, A]])(using sp: SourcePos): F[(Expr[Term.TypeLevel, T], Expr[ValueLevel, A => T])]
+  def LIST: F[Expr[Term.TypeLevel, List[__]]]
+  def List[A]: F[Expr[ValueLevel, List[A] => List[A]]]
+  extension [A] (list: F[Expr[ValueLevel, List[A] => List[A]]])
     @scala.annotation.targetName("appVL")
-    def apply(args: F[Term.ValueLevel[A]]*): F[Term.ValueLevel[List[A]]]
+    def apply(args: F[Expr[ValueLevel, A]]*): F[Expr[ValueLevel, List[A]]]
 
 object ComplexTypes:
 
@@ -27,38 +28,42 @@ object ComplexTypes:
     @scala.annotation.targetName("caseClass1")
     def CASECLASS[T, A](
       name: String,
-      fields: StateT[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[A]]
+      fields: StateT[ErrorF, List[Statement], Expr[Term.ValueLevel.Var.UserDefinedValue,A]]
     )(
       using
         sp: SourcePos
-    ): StateT[ErrorF, List[Statement], (Term.TypeLevel[T], Term.ValueLevel[A => T])] =
+    ): StateT[ErrorF, List[Statement], (Expr[Term.TypeLevel, T], Expr[ValueLevel, A => T])] =
       for
         (fields, a) <- StateT.liftF(fields.runEmpty)
         fs <- StateT.liftF(
           fields.traverse(field => field match
-            case d@Statement.RecordDef(_,_)   => Left(???)
-            case d@Statement.ObjectDef(_,_,_) => Left(???)
-            case d@Statement.PackageDef(_,_)  => Left(???)
-            case d@Statement.ValDef(_,_)      => Right[List[CompileError], Statement.ValDef](d)
+            case d@Statement.CaseClassDef(_,_) => Left(???)
+            case d@Statement.ObjectDef(_,_,_)  => Left(???)
+            case d@Statement.PackageDef(_,_)   => Left(???)
+            case d@Statement.ValDef(_,_)       => Right[List[CompileError], Statement.ValDef](d)
+            case d@Statement.Expr.BuiltInType(_)      => Left(???)
+            case d@Statement.Expr.BuiltInValue(_)      => Left(???)
+            case d@Statement.Expr.UserType(_)      => Left(???)
+            case d@Statement.Expr.UserValue(_)      => Left(???)
           )
         )
         c <- StateT.pure(CaseClass[T](name, fs))
-        f <- StateT.pure(Term.ValueLevel.Lam1(a, Term.ValueLevel.AppCtor1(c.tpe, a)))
-        v <- StateT.pure(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.tpe, c.tpe), Some(f)))
-        d <- StateT.pure(Statement.RecordDef(c, 0))
+        f <- StateT.pure(Expr.BuiltInValue(Term.ValueLevel.Lam1(a, Expr.BuiltInValue[T](Term.ValueLevel.AppCtor1[T, A](c.tpe, a)))))
+        v <- StateT.pure(Expr.UserValue[A => T](Term.ValueLevel.Var.UserDefinedValue(name, Expr.BuiltInType(Term.TypeLevel.App2(Expr.BuiltInType(Term.TypeLevel.Var.Function1Type), a.value.tpe, c.tpe)), Some(f))))
+        d <- StateT.pure(Statement.CaseClassDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield (c.tpe, v)
 
-    def LIST: StateT[ErrorF, List[Statement], Term.TypeLevel[List[__]]] =
-      StateT.pure(Term.TypeLevel.Var.ListType)
+    def LIST: StateT[ErrorF, List[Statement], Expr[Term.TypeLevel, List[__]]] =
+      StateT.pure(Expr.BuiltInType(Term.TypeLevel.Var.ListType))
       
-    def List[A]: StateT[ErrorF, List[Statement], Term.ValueLevel[List[A] => List[A]]] =
-      StateT.pure(Term.ValueLevel.Var.ListCtor[A]())
+    def List[A]: StateT[ErrorF, List[Statement], Expr[ValueLevel, List[A] => List[A]]] =
+      StateT.pure(Expr.BuiltInValue(Term.ValueLevel.Var.ListCtor[A]()))
     
-    extension [A] (list: StateT[ErrorF, List[Statement], Term.ValueLevel[List[A] => List[A]]])
+    extension [A] (list: StateT[ErrorF, List[Statement], Expr[ValueLevel, List[A] => List[A]]])
       @scala.annotation.targetName("appVL")
-      def apply(args: StateT[ErrorF, List[Statement], Term.ValueLevel[A]]*): StateT[ErrorF, List[Statement], Term.ValueLevel[List[A]]] =
+      def apply(args: StateT[ErrorF, List[Statement], Expr[ValueLevel, A]]*): StateT[ErrorF, List[Statement], Expr[ValueLevel, List[A]]] =
         for
           l <- list
           a <- args.toList.sequence
-        yield Term.ValueLevel.AppVargs[A, List[A]](l, a*)
+        yield Expr.BuiltInValue(Term.ValueLevel.AppVargs[A, List[A]](l, a*))

@@ -1,7 +1,6 @@
 package dc10.scala.ctx.predef.file
 
 import cats.data.StateT
-import dc10.scala.ast.Binding
 import dc10.scala.ast.Binding.Package
 import dc10.scala.ast.Statement
 import dc10.scala.ctx.{ErrorF, ext}
