@@ -1,18 +1,19 @@
 package dc10.scala.ctx.predef
 
 import cats.data.StateT
-import dc10.scala.ast.Binding
-import dc10.scala.ast.Binding.Term
+import dc10.scala.ast.Symbol.Term
+import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
+import dc10.scala.ast.Symbol.Term.ValueLevel.Var.UserDefinedValue
 import dc10.scala.ast.Statement
-import dc10.scala.ast.Statement.ValDef
+import dc10.scala.ast.Statement.{ValDef, Expr}
 import dc10.scala.ctx.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
 
 trait Variables[F[_]]:
-  def VAL[T](nme: String, tpe: F[Term.TypeLevel[T]])(using sp: SourcePos): F[Term.ValueLevel.Var.UserDefinedValue[T]]
-  def VAL[T](nme: String, tpe: F[Term.TypeLevel[T]])(impl: F[Term.ValueLevel[T]])(using sp: SourcePos): F[Term.ValueLevel.Var.UserDefinedValue[T]]
-  given refV[T]: Conversion[Term.ValueLevel[T], F[Term.ValueLevel[T]]]
+  def VAL[T](nme: String, tpe: F[Expr[TypeLevel, T]])(using sp: SourcePos): F[Expr[UserDefinedValue, T]]
+  def VAL[T](nme: String, tpe: F[Expr[TypeLevel, T]])(impl: F[Expr[ValueLevel, T]])(using sp: SourcePos): F[Expr[UserDefinedValue, T]]
+  given refV[T]: Conversion[Expr[ValueLevel, T], F[Expr[ValueLevel, T]]]
 
 object Variables:
 
@@ -20,34 +21,35 @@ object Variables:
 
     def VAL[T](
       nme: String,
-      tpe: StateT[ErrorF, List[Statement], Term.TypeLevel[T]]
+      tpe: StateT[ErrorF, List[Statement], Expr[TypeLevel, T]]
     )(
       using sp: SourcePos
-    ): StateT[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]] =
+    ): StateT[ErrorF, List[Statement], Expr[UserDefinedValue, T]] =
       for
         t <- tpe
-        v <- StateT.pure[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]](
-          Term.ValueLevel.Var.UserDefinedValue(nme, t, None))
+        v <- StateT.pure[ErrorF, List[Statement], Expr[UserDefinedValue, T]](
+          Expr.UserValue(Term.ValueLevel.Var.UserDefinedValue(nme, t, None)))
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield v
 
     def VAL[T](
       nme: String,
-      tpe: StateT[ErrorF, List[Statement], Term.TypeLevel[T]]
+      tpe: StateT[ErrorF, List[Statement], Expr[TypeLevel, T]]
     )( 
-      impl: StateT[ErrorF, List[Statement], Term.ValueLevel[T]]
-    )(using sp: SourcePos): StateT[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]] =
+      impl: StateT[ErrorF, List[Statement], Expr[ValueLevel, T]]
+    )(using sp: SourcePos): StateT[ErrorF, List[Statement], Expr[UserDefinedValue, T]] =
       for
         t <- tpe
         i <- impl
-        v <- StateT.pure[ErrorF, List[Statement], Term.ValueLevel.Var.UserDefinedValue[T]](
-          Term.ValueLevel.Var.UserDefinedValue(nme, t, Some(i)))
+        v <- StateT.pure[ErrorF, List[Statement], Expr[UserDefinedValue, T]](
+          Expr.UserValue(Term.ValueLevel.Var.UserDefinedValue(nme, t, Some(i)))
+        )
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield v
 
-    given refV[T]: Conversion[Term.ValueLevel[T], StateT[ErrorF, List[Statement], Term.ValueLevel[T]]] =
-      StateT.pure
+    given refV[T]: Conversion[Expr[ValueLevel, T], StateT[ErrorF, List[Statement], Expr[ValueLevel, T]]] =
+      v => StateT.pure(v)
 
   

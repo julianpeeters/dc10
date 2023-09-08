@@ -1,7 +1,8 @@
 package dc10.scala.ast
 
-import dc10.scala.ast.Binding.{CaseClass, Package, Term}
+import Symbol.{CaseClass, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
+import Symbol.Term.ValueLevel
 
 
 sealed trait Statement:
@@ -10,36 +11,21 @@ sealed trait Statement:
   
 object Statement:
 
-  // def indent(s: Statement): Statement =
-  //   s match
-  //     case b@ObjectDef(_, _, i) => b.copy(indent = i + 1)
-  //     case b@PackageDef(_, _, i) => b.copy(indent = i + 1)
-  //     case b@TypeDef(_, _, i) => b.copy(indent = i + 1)
-  //     case b@DefDef(_, _, i) => b.copy(indent = i + 1)
-  //     case b@ValDef(_, _, i) => b.copy(indent = i + 1)
-
-  // case class PackageDef(
-  //   pkg: Package,
-  //   sp: SourcePos,
-  //   indent: Int,
-  // ) extends Statement
-
-
-  sealed abstract case class RecordDef(
+  sealed abstract case class CaseClassDef(
     indent: Int,
     sp: SourcePos
   ) extends Statement:
     type Tpe
     def caseclass: CaseClass[Tpe]
 
-  object RecordDef:
+  object CaseClassDef:
     def apply[T](
       v: CaseClass[T],
       i: Int
     )(
       using sp: SourcePos
-    ): RecordDef =
-      new RecordDef(i, sp):
+    ): CaseClassDef =
+      new CaseClassDef(i, sp):
         type Tpe = T
         def caseclass: CaseClass[T] = v
 
@@ -70,11 +56,11 @@ object Statement:
     sp: SourcePos
   ) extends Statement:
     type Tpe
-    def value: Term.ValueLevel.Var.UserDefinedValue[Tpe]
+    def value: Expr[Term.ValueLevel.Var.UserDefinedValue, Tpe]
 
   object ValDef:
     def apply[T](
-      v: Term.ValueLevel.Var.UserDefinedValue[T]
+      v: Expr[Term.ValueLevel.Var.UserDefinedValue, T]
     )(
       i: Int
     )(
@@ -82,4 +68,29 @@ object Statement:
     ): ValDef =
       new ValDef(i, sp):
         type Tpe = T
-        def value: Term.ValueLevel.Var.UserDefinedValue[T] = v
+        def value: Expr[Term.ValueLevel.Var.UserDefinedValue, T] = v
+
+
+  sealed trait Expr[+F[_], T] extends Statement:
+    type Tpe = T
+    def value: F[Tpe]
+
+  object Expr:
+
+    case class BuiltInType[T](value: Term.TypeLevel[T]) extends Expr[Term.TypeLevel, T]:
+      def indent: Int = 0
+      def sp: SourcePos = summon[SourcePos]
+
+    case class BuiltInValue[T](value: Term.ValueLevel[T]) extends Expr[Term.ValueLevel, T]:
+      def indent: Int = 0
+      def sp: SourcePos = summon[SourcePos]
+     
+    case class UserType[T](value: Term.TypeLevel.Var.UserDefinedType[T]) extends Expr[Term.TypeLevel.Var.UserDefinedType, T]:
+      def indent: Int = 0
+      def sp: SourcePos = summon[SourcePos]
+
+    case class UserValue[T](value: Term.ValueLevel.Var.UserDefinedValue[T]) extends Expr[Term.ValueLevel.Var.UserDefinedValue, T]:
+      def indent: Int = 0
+      def sp: SourcePos = summon[SourcePos]
+
+      
