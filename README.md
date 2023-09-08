@@ -1,4 +1,2 @@
 # dc10
-A simplified AST for Scala code generation.
-
-### *Status: experimenting with term models*
+A purely functional AST for Scala code generation.
