@@ -48,12 +48,12 @@ object ComplexTypes:
           )
         )
         c <- StateT.pure(CaseClass[T](name, fs))
-        f <- StateT.pure(Expr.BuiltInValue(Term.ValueLevel.Lam1(a, Expr.BuiltInValue[T](Term.ValueLevel.AppCtor1[T, A](c.tpe, a)))))
+        f <- StateT.pure(Expr.BuiltInValue(Term.ValueLevel.Lam1(a.value, Term.ValueLevel.AppCtor1[T, A](c.tpe, a.value))))
         v <- StateT.pure(Expr.UserValue[A => T](
-          Term.ValueLevel.Var.UserDefinedValue(name, Expr.BuiltInType(Term.TypeLevel.App2(Expr.BuiltInType(Term.TypeLevel.Var.Function1Type), a.value.tpe, c.tpe)), Some(f))))
+          Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.value.tpe, c.tpe), Some(f.value))))
         d <- StateT.pure(Statement.CaseClassDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
-      yield (c.tpe, v)
+      yield (Expr.UserType(c.tpe), v)
 
     def LIST: StateT[ErrorF, List[Statement], Expr[Term.TypeLevel, List[__]]] =
       StateT.pure(Expr.BuiltInType(Term.TypeLevel.Var.ListType))
@@ -67,4 +67,4 @@ object ComplexTypes:
         for
           l <- list
           a <- args.toList.sequence
-        yield Expr.BuiltInValue(Term.ValueLevel.AppVargs[A, List[A]](l, a*))
+        yield Expr.BuiltInValue(Term.ValueLevel.AppVargs[A, List[A]](l.value, a.map(arg => arg.value)*))

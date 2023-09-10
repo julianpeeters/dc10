@@ -24,10 +24,10 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
         d.value match
           case UserValue(value) =>
            value.impl.fold(
-              s"val ${value.nme}: ${renderExpr(value.tpe)}"
+              s"val ${value.nme}: ${renderType(value.tpe)}"
             )(
               i =>
-                s"val ${value.nme}: ${renderExpr(value.tpe)} = ${renderExpr(i)}"
+                s"val ${value.nme}: ${renderType(value.tpe)} = ${renderValue(i)}"
             )
       case BuiltInType(t) => 
         renderType(t) 
@@ -45,21 +45,11 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
     override def version: "scala-3.3.0" =
       "scala-3.3.0"
 
-    private def renderExpr[F[_], T](expr: Expr[F, T]): String =
-      expr match
-        case BuiltInType(v) =>        
-          renderType(v)
-        case BuiltInValue(v) =>        
-          renderValue(v)
-        case UserType(t) =>
-          renderType(t)
-        case UserValue(v) =>
-          renderValue(v)
     private def renderType[T](tpe: Term.TypeLevel[T]): String =
       tpe match
         // application
-        case Term.TypeLevel.App1(tfun, targ) => s"${renderExpr(tfun)}[${renderExpr(targ)}]"
-        case Term.TypeLevel.App2(tfun, ta, tb) => s"${renderExpr(ta)} ${renderExpr(tfun)} ${renderExpr(tb)}"
+        case Term.TypeLevel.App1(tfun, targ) => s"${renderType(tfun)}[${renderType(targ)}]"
+        case Term.TypeLevel.App2(tfun, ta, tb) => s"${renderType(ta)} ${renderType(tfun)} ${renderType(tb)}"
         // primitive
         case Term.TypeLevel.Var.BooleanType => "Boolean"
         case Term.TypeLevel.Var.IntType => "Int"
@@ -72,11 +62,11 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
     private def renderValue[T](value: Term.ValueLevel[T]): String =
       value match 
         // application
-        case Term.ValueLevel.App1(f, a) => s"${renderExpr(f)}(${renderExpr(a)})"
-        case Term.ValueLevel.AppCtor1(t, a) => s"${renderExpr(t)}(${renderExpr(a)})"
-        case Term.ValueLevel.AppVargs(f, as*) => s"${renderExpr(f)}(${as.map(a => renderExpr(a)).mkString(", ")})"
+        case Term.ValueLevel.App1(f, a) => s"${renderValue(f)}(${renderValue(a)})"
+        case Term.ValueLevel.AppCtor1(t, a) => s"${renderType(t)}(${renderValue(a)})"
+        case Term.ValueLevel.AppVargs(f, as*) => s"${renderValue(f)}(${as.map(a => renderValue(a)).mkString(", ")})"
         // function
-        case Term.ValueLevel.Lam1(a, b) => s"${renderExpr(a)} => ${renderExpr(b)}"
+        case Term.ValueLevel.Lam1(a, b) => s"${renderValue(a)} => ${renderValue(b)}"
         // primitive
         case Term.ValueLevel.Var.BooleanLiteral(b) => s"$b"
         case Term.ValueLevel.Var.IntLiteral(i) => s"$i"

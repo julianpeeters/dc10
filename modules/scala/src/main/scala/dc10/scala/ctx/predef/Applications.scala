@@ -33,7 +33,7 @@ object Applications:
         for
           f <- tfunction
           a <- targs
-        yield Expr.BuiltInType(Term.TypeLevel.App1[T, A](f, a))
+        yield Expr.BuiltInType(Term.TypeLevel.App1[T, A](f.value, a.value))
 
     extension [T[_,_]] (tfunction: StateT[ErrorF, List[Statement], Expr[TypeLevel, T[__, __]]])
       @scala.annotation.targetName("app2T")
@@ -42,7 +42,7 @@ object Applications:
           f <- tfunction
           a <- fta
           b <- ftb
-        yield Expr.BuiltInType(Term.TypeLevel.App2[T, A, B](f, a, b))
+        yield Expr.BuiltInType(Term.TypeLevel.App2[T, A, B](f.value, a.value, b.value))
 
     extension [A, B] (function: StateT[ErrorF, List[Statement], Expr[ValueLevel, A => B]])
       @scala.annotation.targetName("app1V")
@@ -50,4 +50,4 @@ object Applications:
         for
           f <- function
           a <- args
-        yield Expr.BuiltInValue(Term.ValueLevel.App1[A, B](f, a))
+        yield Expr.BuiltInValue(Term.ValueLevel.App1[A, B](f.value, a.value))

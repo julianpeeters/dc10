@@ -28,7 +28,7 @@ object Variables:
       for
         t <- tpe
         v <- StateT.pure[ErrorF, List[Statement], Expr[UserDefinedValue, T]](
-          Expr.UserValue(Term.ValueLevel.Var.UserDefinedValue(nme, t, None)))
+          Expr.UserValue(Term.ValueLevel.Var.UserDefinedValue(nme, t.value, None)))
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield v
@@ -43,7 +43,7 @@ object Variables:
         t <- tpe
         i <- impl
         v <- StateT.pure[ErrorF, List[Statement], Expr[UserDefinedValue, T]](
-          Expr.UserValue(Term.ValueLevel.Var.UserDefinedValue(nme, t, Some(i)))
+          Expr.UserValue(Term.ValueLevel.Var.UserDefinedValue(nme, t.value, Some(i.value)))
         )
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
