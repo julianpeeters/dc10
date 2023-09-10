@@ -7,7 +7,7 @@ import dc10.scala.ast.Symbol.Term.TypeLevel.__
 import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.Expr
-import dc10.scala.ctx.ErrorF
+import dc10.scala.ErrorF
 
 trait Applications[F[_]]:
 

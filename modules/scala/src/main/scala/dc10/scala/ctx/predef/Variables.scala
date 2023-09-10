@@ -6,7 +6,7 @@ import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
 import dc10.scala.ast.Symbol.Term.ValueLevel.Var.UserDefinedValue
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{ValDef, Expr}
-import dc10.scala.ctx.ErrorF
+import dc10.scala.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
 

@@ -7,7 +7,7 @@ import dc10.scala.ast.Symbol.Term.TypeLevel.__
 import dc10.scala.ast.Symbol.Term.ValueLevel
 import dc10.scala.ast.Statement
 import dc10.scala.error.CompileError
-import dc10.scala.ctx.ErrorF
+import dc10.scala.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
 import dc10.scala.ast.Statement.Expr
@@ -49,7 +49,8 @@ object ComplexTypes:
         )
         c <- StateT.pure(CaseClass[T](name, fs))
         f <- StateT.pure(Expr.BuiltInValue(Term.ValueLevel.Lam1(a, Expr.BuiltInValue[T](Term.ValueLevel.AppCtor1[T, A](c.tpe, a)))))
-        v <- StateT.pure(Expr.UserValue[A => T](Term.ValueLevel.Var.UserDefinedValue(name, Expr.BuiltInType(Term.TypeLevel.App2(Expr.BuiltInType(Term.TypeLevel.Var.Function1Type), a.value.tpe, c.tpe)), Some(f))))
+        v <- StateT.pure(Expr.UserValue[A => T](
+          Term.ValueLevel.Var.UserDefinedValue(name, Expr.BuiltInType(Term.TypeLevel.App2(Expr.BuiltInType(Term.TypeLevel.Var.Function1Type), a.value.tpe, c.tpe)), Some(f))))
         d <- StateT.pure(Statement.CaseClassDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield (c.tpe, v)
