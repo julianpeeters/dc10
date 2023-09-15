@@ -56,11 +56,11 @@ object Statement:
     sp: SourcePos
   ) extends Statement:
     type Tpe
-    def value: Expr[Term.ValueLevel.Var.UserDefinedValue, Tpe]
+    def value: ValueLevel.Var.UserDefinedValue[Tpe]
 
   object ValDef:
     def apply[T](
-      v: Expr[Term.ValueLevel.Var.UserDefinedValue, T]
+      v: ValueLevel.Var.UserDefinedValue[T]
     )(
       i: Int
     )(
@@ -68,29 +68,13 @@ object Statement:
     ): ValDef =
       new ValDef(i, sp):
         type Tpe = T
-        def value: Expr[Term.ValueLevel.Var.UserDefinedValue, T] = v
+        def value: ValueLevel.Var.UserDefinedValue[T] = v
 
 
-  sealed trait Expr[+F[_], T] extends Statement:
-    type Tpe = T
-    def value: F[Tpe]
+  case class TypeExpr[T](tpe: Term.TypeLevel[T]) extends Statement:
+    def indent: Int = 0
+    def sp: SourcePos = summon[SourcePos]
 
-  object Expr:
-
-    case class BuiltInType[T](value: Term.TypeLevel[T]) extends Expr[Term.TypeLevel, T]:
-      def indent: Int = 0
-      def sp: SourcePos = summon[SourcePos]
-
-    case class BuiltInValue[T](value: Term.ValueLevel[T]) extends Expr[Term.ValueLevel, T]:
-      def indent: Int = 0
-      def sp: SourcePos = summon[SourcePos]
-     
-    case class UserType[T](value: Term.TypeLevel.Var.UserDefinedType[T]) extends Expr[Term.TypeLevel.Var.UserDefinedType, T]:
-      def indent: Int = 0
-      def sp: SourcePos = summon[SourcePos]
-
-    case class UserValue[T](value: Term.ValueLevel.Var.UserDefinedValue[T]) extends Expr[Term.ValueLevel.Var.UserDefinedValue, T]:
-      def indent: Int = 0
-      def sp: SourcePos = summon[SourcePos]
-
-      
+  case class ValueExpr[T](value: Term.ValueLevel[T]) extends Statement:
+    def indent: Int = 0
+    def sp: SourcePos = summon[SourcePos]

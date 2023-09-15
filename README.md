@@ -1,4 +1,4 @@
 # dc10
-A purely functional AST for Scala code generation.
+A purely functional Scala code generation.
 
-### *Status: experimenting with term metadata models*
+### *Status: experimenting with term models*

@@ -6,48 +6,48 @@ import dc10.scala.ast.Symbol.Term
 import dc10.scala.ast.Symbol.Term.TypeLevel.__
 import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
 import dc10.scala.ast.Statement
-import dc10.scala.ast.Statement.Expr
+import dc10.scala.ast.Statement.{TypeExpr, ValueExpr}
 import dc10.scala.ErrorF
 
 trait Applications[F[_]]:
 
-  extension [T[_]] (function: F[Expr[TypeLevel, T[__]]])
+  extension [T[_]] (function: F[TypeExpr[T[__]]])
     @scala.annotation.targetName("app1T")
-    def apply[A](args: F[Expr[TypeLevel, A]]): F[Expr[TypeLevel, T[A]]]
+    def apply[A](args: F[TypeExpr[A]]): F[TypeExpr[T[A]]]
 
-  extension [T[_,_]] (tfunction: F[Expr[TypeLevel, T[__, __]]])
+  extension [T[_,_]] (tfunction: F[TypeExpr[T[__, __]]])
     @scala.annotation.targetName("app2T")
-    def apply[A, B](fta: F[Expr[TypeLevel, A]])(ftb: F[Expr[TypeLevel, B]]): F[Expr[TypeLevel, T[A, B]]]
+    def apply[A, B](fta: F[TypeExpr[A]])(ftb: F[TypeExpr[B]]): F[TypeExpr[T[A, B]]]
 
-  extension [A, B] (function: F[Expr[ValueLevel, A => B]])
+  extension [A, B] (function: F[ValueExpr[A => B]])
     @scala.annotation.targetName("app1V")
-    def apply(args: F[Expr[ValueLevel, A]]): F[Expr[ValueLevel, B]]
+    def apply(args: F[ValueExpr[A]]): F[ValueExpr[B]]
 
 object Applications:
 
   trait Mixins extends Applications[[A] =>> StateT[ErrorF, List[Statement], A]]:
 
-    extension [T[_]] (tfunction: StateT[ErrorF, List[Statement], Expr[TypeLevel, T[__]]])
+    extension [T[_]] (tfunction: StateT[ErrorF, List[Statement], TypeExpr[T[__]]])
       @scala.annotation.targetName("app1T")
-      def apply[A](targs: StateT[ErrorF, List[Statement], Expr[TypeLevel, A]]): StateT[ErrorF, List[Statement], Expr[TypeLevel, T[A]]] =
+      def apply[A](targs: StateT[ErrorF, List[Statement], TypeExpr[A]]): StateT[ErrorF, List[Statement], TypeExpr[T[A]]] =
         for
           f <- tfunction
           a <- targs
-        yield Expr.BuiltInType(Term.TypeLevel.App1[T, A](f.value, a.value))
+        yield TypeExpr(Term.TypeLevel.App1[T, A](f.tpe, a.tpe))
 
-    extension [T[_,_]] (tfunction: StateT[ErrorF, List[Statement], Expr[TypeLevel, T[__, __]]])
+    extension [T[_,_]] (tfunction: StateT[ErrorF, List[Statement], TypeExpr[T[__, __]]])
       @scala.annotation.targetName("app2T")
-      def apply[A, B](fta: StateT[ErrorF, List[Statement], Expr[TypeLevel, A]])(ftb: StateT[ErrorF, List[Statement], Expr[TypeLevel, B]]): StateT[ErrorF, List[Statement], Expr[TypeLevel, T[A, B]]] =
+      def apply[A, B](fta: StateT[ErrorF, List[Statement], TypeExpr[A]])(ftb: StateT[ErrorF, List[Statement], TypeExpr[B]]): StateT[ErrorF, List[Statement], TypeExpr[T[A, B]]] =
         for
           f <- tfunction
           a <- fta
           b <- ftb
-        yield Expr.BuiltInType(Term.TypeLevel.App2[T, A, B](f.value, a.value, b.value))
+        yield TypeExpr(Term.TypeLevel.App2[T, A, B](f.tpe, a.tpe, b.tpe))
 
-    extension [A, B] (function: StateT[ErrorF, List[Statement], Expr[ValueLevel, A => B]])
+    extension [A, B] (function: StateT[ErrorF, List[Statement], ValueExpr[A => B]])
       @scala.annotation.targetName("app1V")
-      def apply(args: StateT[ErrorF, List[Statement], Expr[ValueLevel, A]]): StateT[ErrorF, List[Statement], Expr[ValueLevel, B]] =
+      def apply(args: StateT[ErrorF, List[Statement], ValueExpr[A]]): StateT[ErrorF, List[Statement], ValueExpr[B]] =
         for
           f <- function
           a <- args
-        yield Expr.BuiltInValue(Term.ValueLevel.App1[A, B](f.value, a.value))
+        yield ValueExpr(Term.ValueLevel.App1[A, B](f.value, a.value))
