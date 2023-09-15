@@ -73,24 +73,16 @@ object Symbol:
         case object ListType extends Var[List[__]]
         case class UserDefinedType[T](nme: String, impl: Option[TypeLevel[T]]) extends Var[T]
         
-    sealed trait ValueLevel[T] extends Term:
-      def tpe: TypeLevel[T]
+    sealed trait ValueLevel[T] extends Term
     object ValueLevel:
-      case class App1[A, B](fun: ValueLevel[A => B], arg: ValueLevel[A]) extends Term.ValueLevel[B]:
-        def tpe: TypeLevel[B] = ???
+      case class App1[A, B](fun: ValueLevel[A => B], arg: ValueLevel[A]) extends Term.ValueLevel[B]
       case class AppCtor1[T, A](tpe: TypeLevel[T], arg: ValueLevel[A]) extends Term.ValueLevel[T]
-      case class AppVargs[A, B](fun: ValueLevel[List[A] => B], vargs: ValueLevel[A]*) extends Term.ValueLevel[B]:
-        def tpe: TypeLevel[B] = ???
-      case class Lam1[A, B](a: ValueLevel[A], b: ValueLevel[B]) extends Term.ValueLevel[A => B]:
-        def tpe: TypeLevel[A => B] = ???
+      case class AppVargs[A, B](fun: ValueLevel[List[A] => B], vargs: ValueLevel[A]*) extends Term.ValueLevel[B]
+      case class Lam1[A, B](a: ValueLevel[A], b: ValueLevel[B]) extends Term.ValueLevel[A => B]
       sealed abstract class Var[T] extends Term.ValueLevel[T]
       object Var:
-        case class BooleanLiteral(b: Boolean) extends Var[Boolean]:
-          def tpe: TypeLevel.Var.BooleanType.type = TypeLevel.Var.BooleanType
-        case class IntLiteral(i: Int) extends Var[Int]:
-          def tpe: TypeLevel.Var.IntType.type = TypeLevel.Var.IntType
-        case class StringLiteral(s: String) extends Var[String]:
-          def tpe: TypeLevel.Var.StringType.type = TypeLevel.Var.StringType
-        case class ListCtor[A]() extends Var[List[A] => List[A]]:
-          def tpe: TypeLevel[List[A] => List[A]] = ???
+        case class BooleanLiteral(b: Boolean) extends Var[Boolean]
+        case class IntLiteral(i: Int) extends Var[Int]
+        case class StringLiteral(s: String) extends Var[String]
+        case class ListCtor[A]() extends Var[List[A] => List[A]]
         case class UserDefinedValue[T](nme: String, tpe: TypeLevel[T], impl: Option[ValueLevel[T]]) extends Var[T]

@@ -11,6 +11,15 @@ import dc10.scala.ErrorF
 import dc10.scala.ctx.ext
 import org.tpolecat.sourcepos.SourcePos
 import dc10.scala.ast.Statement.{TypeExpr, ValueExpr}
+import dc10.scala.ast.Symbol.Term.ValueLevel.App1
+import dc10.scala.ast.Symbol.Term.ValueLevel.AppCtor1
+import dc10.scala.ast.Symbol.Term.ValueLevel.AppVargs
+import dc10.scala.ast.Symbol.Term.ValueLevel.Lam1
+import dc10.scala.ast.Symbol.Term.ValueLevel.Var.BooleanLiteral
+import dc10.scala.ast.Symbol.Term.ValueLevel.Var.IntLiteral
+import dc10.scala.ast.Symbol.Term.ValueLevel.Var.StringLiteral
+import dc10.scala.ast.Symbol.Term.ValueLevel.Var.ListCtor
+import dc10.scala.ast.Symbol.Term.ValueLevel.Var.UserDefinedValue
 
 trait ComplexTypes[F[_]]:
   @scala.annotation.targetName("caseClass1")
@@ -48,7 +57,23 @@ object ComplexTypes:
         )
         c <- StateT.pure(CaseClass[T](name, fs))
         f <- StateT.pure(ValueExpr(Term.ValueLevel.Lam1(a.value, Term.ValueLevel.AppCtor1[T, A](c.tpe, a.value))))
-        v <- StateT.pure(ValueExpr[A => T](Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.value.tpe, c.tpe), Some(f.value))))
+        v <- StateT.liftF(
+          a.value match
+            case App1(fun, arg) => Left(???)
+            case AppCtor1(tpe, arg) => Left(???)
+            case AppVargs(fun, vargs*) => Left(???)
+            case Lam1(a, b) => Left(???)
+            case BooleanLiteral(b) => Left(???)
+            case IntLiteral(i) => Left(???)
+            case StringLiteral(s) => Left(???)
+            case ListCtor() => Left(???)
+            case UserDefinedValue(nme, tpe, impl) =>
+              Right[List[CompileError], Statement.ValueExpr[A => T]](
+                ValueExpr[A => T](Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, tpe, c.tpe), Some(f.value)))
+              )
+          
+          
+        )
         d <- StateT.pure(Statement.CaseClassDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield (TypeExpr(c.tpe), v)
