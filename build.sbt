@@ -5,7 +5,7 @@ val SourcePosV = "1.1.0"
 
 ThisBuild / description := "A simplified AST for Scala code generation."
 ThisBuild / organization := "com.julianpeeters"
-ThisBuild / scalaVersion := "3.3.0"
+ThisBuild / scalaVersion := "3.3.1"
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / versionScheme := Some("semver-spec")
 
