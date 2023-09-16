@@ -2,12 +2,14 @@ package dc10.scala.ctx.predef
 
 import cats.implicits.*
 import cats.data.StateT
+import cats.Eval
+import cats.free.Cofree
 import dc10.scala.ast.Symbol.Term
 import dc10.scala.ast.Symbol.Term.TypeLevel.__
 import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{TypeExpr, ValueExpr}
-import dc10.scala.ErrorF
+import dc10.scala.error.ErrorF
 
 trait Applications[F[_]]:
 
@@ -50,4 +52,4 @@ object Applications:
         for
           f <- function
           a <- args
-        yield ValueExpr(Term.ValueLevel.App1[A, B](f.value, a.value))
+        yield ValueExpr(Cofree((), Eval.now(Term.ValueLevel.App1(f.value, a.value))))

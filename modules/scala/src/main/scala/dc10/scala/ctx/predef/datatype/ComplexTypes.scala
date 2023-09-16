@@ -1,16 +1,18 @@
 package dc10.scala.ctx.predef.datatype
 
 import cats.data.StateT
+import cats.Eval
+import cats.free.Cofree
 import cats.implicits.*
+import dc10.scala.ast.Statement
+import dc10.scala.ast.Statement.{TypeExpr, ValueExpr}
 import dc10.scala.ast.Symbol.{CaseClass, Term}
 import dc10.scala.ast.Symbol.Term.TypeLevel.__
-import dc10.scala.ast.Symbol.Term.ValueLevel
-import dc10.scala.ast.Statement
-import dc10.scala.error.CompileError
-import dc10.scala.ErrorF
+import dc10.scala.ast.Symbol.Term.ValueLevel.{App1, AppCtor1, AppVargs, Lam1}
+import dc10.scala.ast.Symbol.Term.ValueLevel.Var.{BooleanLiteral, IntLiteral, StringLiteral, ListCtor, UserDefinedValue}
 import dc10.scala.ctx.ext
+import dc10.scala.error.{CompileError, ErrorF, IdentifierStatementExpected, IdentifierSymbolExpected}
 import org.tpolecat.sourcepos.SourcePos
-import dc10.scala.ast.Statement.{TypeExpr, ValueExpr}
 
 trait ComplexTypes[F[_]]:
   @scala.annotation.targetName("caseClass1")
@@ -34,21 +36,31 @@ object ComplexTypes:
         sp: SourcePos
     ): StateT[ErrorF, List[Statement], (TypeExpr[T], ValueExpr[A => T])] =
       for
-        (fields, a) <- StateT.liftF(fields.runEmpty)
+        (fields, a) <- StateT.liftF[ErrorF, List[Statement], (List[Statement], ValueExpr[A])](fields.runEmpty)
         fs <- StateT.liftF(
           fields.traverse(field => field match
-            case d@Statement.CaseClassDef(_,_) => Left(???)
-            case d@Statement.ObjectDef(_,_,_)  => Left(???)
-            case d@Statement.PackageDef(_,_)   => Left(???)
+            case d@Statement.CaseClassDef(_,_) => Left(scala.List(IdentifierStatementExpected(d)))
+            case d@Statement.ObjectDef(_,_,_)  => Left(scala.List(IdentifierStatementExpected(d)))
+            case d@Statement.PackageDef(_,_)   => Left(scala.List(IdentifierStatementExpected(d)))
             case d@Statement.ValDef(_,_)       => Right[List[CompileError], Statement.ValDef](d)
-            case d@Statement.TypeExpr(_)       => Left(???)
-            case d@Statement.ValueExpr(_)      => Left(???)
-   
+            case d@Statement.TypeExpr(_)       => Left(scala.List(IdentifierStatementExpected(d)))
+            case d@Statement.ValueExpr(_)      => Left(scala.List(IdentifierStatementExpected(d)))
           )
         )
         c <- StateT.pure(CaseClass[T](name, fs))
-        f <- StateT.pure(ValueExpr(Term.ValueLevel.Lam1(a.value, Term.ValueLevel.AppCtor1[T, A](c.tpe, a.value))))
-        v <- StateT.pure(ValueExpr[A => T](Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.value.tpe, c.tpe), Some(f.value))))
+        f <- StateT.pure[ErrorF, List[Statement], ValueExpr[A => T]](ValueExpr(Cofree((), Eval.now(Term.ValueLevel.Lam1(a.value, Cofree((), Eval.now(Term.ValueLevel.AppCtor1(c.tpe, a.value))))))))
+        v <- StateT.liftF[ErrorF, List[Statement], ValueExpr[A => T]](
+          a.value.tail.value match
+            case App1(_, _) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case AppCtor1(_, _) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case AppVargs(_, vargs*) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case Lam1(_, _) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case BooleanLiteral(_) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case IntLiteral(_) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case StringLiteral(_) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case ListCtor() => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case UserDefinedValue(nme, tpe, impl) => Right[List[CompileError], Statement.ValueExpr[A => T]](ValueExpr[A => T](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, tpe, c.tpe), Some(f.value))))))
+        )
         d <- StateT.pure(Statement.CaseClassDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield (TypeExpr(c.tpe), v)
@@ -57,7 +69,7 @@ object ComplexTypes:
       StateT.pure(TypeExpr(Term.TypeLevel.Var.ListType))
       
     def List[A]: StateT[ErrorF, List[Statement], ValueExpr[List[A] => List[A]]] =
-      StateT.pure(ValueExpr(Term.ValueLevel.Var.ListCtor[A]()))
+      StateT.pure(ValueExpr(Cofree((), Eval.now(Term.ValueLevel.Var.ListCtor()))))
     
     extension [A] (list: StateT[ErrorF, List[Statement], ValueExpr[List[A] => List[A]]])
       @scala.annotation.targetName("appVL")
@@ -65,4 +77,4 @@ object ComplexTypes:
         for
           l <- list
           a <- args.toList.sequence
-        yield ValueExpr(Term.ValueLevel.AppVargs[A, List[A]](l.value, a.map(arg => arg.value)*))
+        yield ValueExpr(Cofree((), Eval.now(Term.ValueLevel.AppVargs(l.value, a.map(arg => arg.value)*))))

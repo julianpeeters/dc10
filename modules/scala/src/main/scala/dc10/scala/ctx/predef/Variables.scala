@@ -1,12 +1,13 @@
 package dc10.scala.ctx.predef
 
 import cats.data.StateT
-import dc10.scala.ast.Symbol.Term
-import dc10.scala.ast.Symbol.Term.ValueLevel.Var.UserDefinedValue
+import cats.Eval
+import cats.free.Cofree
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{TypeExpr, ValDef, ValueExpr}
-import dc10.scala.ErrorF
+import dc10.scala.ast.Symbol.Term
 import dc10.scala.ctx.ext
+import dc10.scala.error.ErrorF
 import org.tpolecat.sourcepos.SourcePos
 
 trait Variables[F[_]]:
@@ -26,8 +27,7 @@ object Variables:
     ): StateT[ErrorF, List[Statement], ValueExpr[T]] =
       for
         t <- tpe
-        v <- StateT.pure(
-          Term.ValueLevel.Var.UserDefinedValue(nme, t.tpe, None))
+        v <- StateT.pure[ErrorF, List[Statement], Term.Value[T]](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(nme, t.tpe, None))))
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield ValueExpr(v)
@@ -41,12 +41,10 @@ object Variables:
       for
         t <- tpe
         i <- impl
-        v <- StateT.pure(Term.ValueLevel.Var.UserDefinedValue(nme, t.tpe, Some(i.value)))
+        v <- StateT.pure[ErrorF, List[Statement], Term.Value[T]](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(nme, t.tpe, Some(i.value)))))
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield ValueExpr(v)
 
     given refV[T]: Conversion[ValueExpr[T], StateT[ErrorF, List[Statement], ValueExpr[T]]] =
       v => StateT.pure(v)
-
-  

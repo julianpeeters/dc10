@@ -4,7 +4,7 @@ import cats.data.StateT
 import dc10.scala.ast.Symbol.Package
 import dc10.scala.ast.Statement
 import dc10.scala.ctx.ext
-import dc10.scala.ErrorF
+import dc10.scala.error.ErrorF
 import dc10.scala.file.ScalaFile
 import java.nio.file.Path
 import org.tpolecat.sourcepos.SourcePos

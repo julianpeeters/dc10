@@ -1,8 +1,8 @@
 package dc10.io
 
-import cats.Traverse
 import cats.effect.Concurrent
 import cats.implicits.*
+import cats.Traverse
 import dc10.compile.VirtualFile
 import fs2.io.file.{Files, Path}
 
