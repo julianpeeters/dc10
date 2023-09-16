@@ -1,9 +1,9 @@
 package dc10.scala
 
-import dc10.scala.ctx.predef.{Applications, Functions, Variables}
-import dc10.scala.ctx.predef.datatype.{ComplexTypes, PrimitiveTypes}
-import dc10.scala.ctx.predef.file.Files
-import dc10.scala.ctx.predef.namespace.Packages
+import dc10.scala.predef.{Applications, Functions, Variables}
+import dc10.scala.predef.datatype.{ComplexTypes, PrimitiveTypes}
+import dc10.scala.predef.file.Files
+import dc10.scala.predef.namespace.Packages
 
 trait dsl
 

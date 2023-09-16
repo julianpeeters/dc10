@@ -1,8 +1,7 @@
 package dc10.scala.ctx
 
 import cats.{Applicative, Functor}
-import dc10.scala.file.ScalaFile
-import dc10.scala.ast.Statement
+import dc10.scala.ast.{ScalaFile, Statement}
 import dc10.scala.ast.Statement.PackageDef
 
 extension [F[_]: Applicative: Functor] (ctx: List[PackageDef])

@@ -2,11 +2,9 @@ package dc10.scala
 
 import cats.data.StateT
 import cats.kernel.Monoid
-import dc10.compile.{Compiler, Renderer}
-import dc10.compile.VirtualFile
-import dc10.scala.ast.Statement
+import dc10.compile.{Compiler, Renderer, VirtualFile}
+import dc10.scala.ast.{ScalaFile, Statement}
 import dc10.scala.error.{CompileError, ErrorF}
-import dc10.scala.file.ScalaFile
 
 implicit object compiler extends Compiler[ErrorF, List]:
 

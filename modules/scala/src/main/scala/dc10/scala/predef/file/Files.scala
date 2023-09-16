@@ -1,11 +1,9 @@
-package dc10.scala.ctx.predef.file
+package dc10.scala.predef.file
 
 import cats.data.StateT
-import dc10.scala.ast.Symbol.Package
-import dc10.scala.ast.Statement
+import dc10.scala.ast.{ScalaFile, Statement, Symbol}
 import dc10.scala.ctx.ext
 import dc10.scala.error.ErrorF
-import dc10.scala.file.ScalaFile
 import java.nio.file.Path
 import org.tpolecat.sourcepos.SourcePos
 
@@ -27,7 +25,7 @@ object Files:
         (ms, a) <- StateT.liftF[ErrorF, List[ScalaFile], (List[Statement], A)](statements.runEmpty)
         n <- StateT.pure[ErrorF, List[ScalaFile], Path](Path.of(nme))
         p <- StateT.pure[ErrorF, List[ScalaFile], Statement.PackageDef](
-          Statement.PackageDef(0, Package.Empty(ms)))
+          Statement.PackageDef(0, Symbol.Package.Empty(ms)))
         d <- StateT.pure[ErrorF, List[ScalaFile], ScalaFile](ScalaFile(n, List(p)))
         _ <- StateT.modifyF[ErrorF, List[ScalaFile]](ctx => ctx.ext(d))
       yield a

@@ -1,4 +1,4 @@
-package dc10.scala.ctx.predef.datatype
+package dc10.scala.predef.datatype
 
 import cats.data.StateT
 import cats.Eval
@@ -48,18 +48,20 @@ object ComplexTypes:
           )
         )
         c <- StateT.pure(CaseClass[T](name, fs))
-        f <- StateT.pure[ErrorF, List[Statement], ValueExpr[A => T]](ValueExpr(Cofree((), Eval.now(Term.ValueLevel.Lam1(a.value, Cofree((), Eval.now(Term.ValueLevel.AppCtor1(c.tpe, a.value))))))))
+        f <- StateT.pure[ErrorF, List[Statement], ValueExpr[A => T]](ValueExpr(
+          Cofree((), Eval.now(Term.ValueLevel.Lam1(a.value, Cofree((), Eval.now(Term.ValueLevel.AppCtor1(c.tpe, a.value))))))))
         v <- StateT.liftF[ErrorF, List[Statement], ValueExpr[A => T]](
           a.value.tail.value match
-            case App1(_, _) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
-            case AppCtor1(_, _) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case App1(_, _)          => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case AppCtor1(_, _)      => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
             case AppVargs(_, vargs*) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
-            case Lam1(_, _) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
-            case BooleanLiteral(_) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
-            case IntLiteral(_) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
-            case StringLiteral(_) => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
-            case ListCtor() => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
-            case UserDefinedValue(nme, tpe, impl) => Right[List[CompileError], Statement.ValueExpr[A => T]](ValueExpr[A => T](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, tpe, c.tpe), Some(f.value))))))
+            case Lam1(_, _)          => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case BooleanLiteral(_)   => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case IntLiteral(_)       => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case StringLiteral(_)    => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case ListCtor()          => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
+            case UserDefinedValue(nme, tpe, impl) => Right[List[CompileError], Statement.ValueExpr[A => T]](ValueExpr[A => T](
+              Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(name, Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, tpe, c.tpe), Some(f.value))))))
         )
         d <- StateT.pure(Statement.CaseClassDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))

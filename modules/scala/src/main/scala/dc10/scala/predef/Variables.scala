@@ -1,4 +1,4 @@
-package dc10.scala.ctx.predef
+package dc10.scala.predef
 
 import cats.data.StateT
 import cats.Eval
