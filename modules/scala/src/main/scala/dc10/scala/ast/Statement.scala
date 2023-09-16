@@ -1,9 +1,7 @@
 package dc10.scala.ast
 
-import Symbol.{CaseClass, Package, Term}
 import org.tpolecat.sourcepos.SourcePos
-import Symbol.Term.ValueLevel
-
+import Symbol.{CaseClass, Package, Term}
 
 sealed trait Statement:
   def indent: Int
@@ -56,11 +54,12 @@ object Statement:
     sp: SourcePos
   ) extends Statement:
     type Tpe
-    def value: ValueLevel.Var.UserDefinedValue[Tpe]
+    type Xx
+    def value: Term.Value[Tpe]
 
   object ValDef:
-    def apply[T](
-      v: ValueLevel.Var.UserDefinedValue[T]
+    def apply[T, X](
+      v: Term.Value[T]
     )(
       i: Int
     )(
@@ -68,13 +67,14 @@ object Statement:
     ): ValDef =
       new ValDef(i, sp):
         type Tpe = T
-        def value: ValueLevel.Var.UserDefinedValue[T] = v
+        type Xx = X
+        def value: Term.Value[T] = v
 
 
   case class TypeExpr[T](tpe: Term.TypeLevel[T]) extends Statement:
     def indent: Int = 0
     def sp: SourcePos = summon[SourcePos]
 
-  case class ValueExpr[T](value: Term.ValueLevel[T]) extends Statement:
+  case class ValueExpr[T](value: Term.Value[T]) extends Statement:
     def indent: Int = 0
     def sp: SourcePos = summon[SourcePos]

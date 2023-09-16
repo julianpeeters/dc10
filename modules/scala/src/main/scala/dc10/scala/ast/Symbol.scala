@@ -1,7 +1,8 @@
 package dc10.scala.ast
 
-import java.nio.file.Path
+import cats.free.Cofree
 import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
+import java.nio.file.Path
 
 sealed trait Symbol
 
@@ -73,16 +74,17 @@ object Symbol:
         case object ListType extends Var[List[__]]
         case class UserDefinedType[T](nme: String, impl: Option[TypeLevel[T]]) extends Var[T]
         
-    sealed trait ValueLevel[T] extends Term
+    type Value[T] = Cofree[[X] =>> ValueLevel[T, X], Unit]
+    sealed trait ValueLevel[T, X] extends Term
     object ValueLevel:
-      case class App1[A, B](fun: ValueLevel[A => B], arg: ValueLevel[A]) extends Term.ValueLevel[B]
-      case class AppCtor1[T, A](tpe: TypeLevel[T], arg: ValueLevel[A]) extends Term.ValueLevel[T]
-      case class AppVargs[A, B](fun: ValueLevel[List[A] => B], vargs: ValueLevel[A]*) extends Term.ValueLevel[B]
-      case class Lam1[A, B](a: ValueLevel[A], b: ValueLevel[B]) extends Term.ValueLevel[A => B]
-      sealed abstract class Var[T] extends Term.ValueLevel[T]
+      case class App1[A, B, X](fun: Value[A => B], arg: Value[A]) extends Term.ValueLevel[B, X]
+      case class AppCtor1[T, A, X](tpe: TypeLevel[T], arg: Value[A]) extends Term.ValueLevel[T, X]
+      case class AppVargs[A, B, X](fun: Value[List[A] => B], vargs: Value[A]*) extends Term.ValueLevel[B, X]
+      case class Lam1[A, B, X](a: Value[A], b: Value[B]) extends Term.ValueLevel[A => B, X]
+      sealed abstract class Var[T, X] extends Term.ValueLevel[T, X]
       object Var:
-        case class BooleanLiteral(b: Boolean) extends Var[Boolean]
-        case class IntLiteral(i: Int) extends Var[Int]
-        case class StringLiteral(s: String) extends Var[String]
-        case class ListCtor[A]() extends Var[List[A] => List[A]]
-        case class UserDefinedValue[T](nme: String, tpe: TypeLevel[T], impl: Option[ValueLevel[T]]) extends Var[T]
+        case class BooleanLiteral[X](b: Boolean) extends Var[Boolean, X]
+        case class IntLiteral[X](i: Int) extends Var[Int, X]
+        case class StringLiteral[X](s: String) extends Var[String, X]
+        case class ListCtor[A, X]() extends Var[List[A] => List[A], X]
+        case class UserDefinedValue[T, X](nme: String, tpe: TypeLevel[T], impl: Option[Value[T]]) extends Var[T, X]

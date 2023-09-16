@@ -1,13 +1,12 @@
 package dc10.scala.ctx.predef.namespace
 
-// import cats.*
 import cats.implicits.*
 import cats.data.StateT
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.PackageDef
 import dc10.scala.ast.Symbol
 import dc10.scala.ctx.ext
-import dc10.scala.ErrorF
+import dc10.scala.error.ErrorF
 import dc10.scala.file.ScalaFile
 import org.tpolecat.sourcepos.SourcePos
 import java.nio.file.Path

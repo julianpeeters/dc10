@@ -2,11 +2,13 @@ package dc10.scala.ctx.predef
 
 import cats.implicits.*
 import cats.data.StateT
-import dc10.scala.ast.Symbol.Term
-import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
+import cats.Eval
+import cats.free.Cofree
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{TypeExpr, ValueExpr}
-import dc10.scala.ErrorF
+import dc10.scala.ast.Symbol.Term
+import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel, Value}
+import dc10.scala.error.ErrorF
 
 trait Functions[F[_]]:
 
@@ -41,7 +43,7 @@ object Functions:
         for
           a <- StateT.liftF(fa.runEmptyA)
           b <- f(a)
-          v <- StateT.pure(Term.ValueLevel.Lam1(a.value, b.value))
+          v <- StateT.pure[ErrorF, List[Statement], Value[A => B]](Cofree((), Eval.now(Term.ValueLevel.Lam1(a.value, b.value))))
         yield ValueExpr(v)
 
         
