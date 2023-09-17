@@ -32,7 +32,7 @@ object Functions:
         for
           a <- domain
           b <- codomain
-          v <- StateT.pure(Term.TypeLevel.App2(Term.TypeLevel.Var.Function1Type, a.tpe, b.tpe))
+          v <- StateT.pure(Term.TypeLevel.App2(None, Term.TypeLevel.Var.Function1Type(None), a.tpe, b.tpe))
         yield TypeExpr(v)
 
     extension [A, B] (fa: StateT[ErrorF, List[Statement], ValueExpr[A]])
@@ -43,7 +43,7 @@ object Functions:
         for
           a <- StateT.liftF(fa.runEmptyA)
           b <- f(a)
-          v <- StateT.pure[ErrorF, List[Statement], Value[A => B]](Cofree((), Eval.now(Term.ValueLevel.Lam1(a.value, b.value))))
+          v <- StateT.pure[ErrorF, List[Statement], Value[A => B]](Cofree((), Eval.now(Term.ValueLevel.Lam1(None, a.value, b.value))))
         yield ValueExpr(v)
 
         

@@ -23,21 +23,21 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
           case Empty(ms) => render(ms)
       case d@ValDef(_, _) =>
         d.value.tail.value match
-          case UserDefinedValue(nme, tpe, impl) =>  impl.fold(
+          case UserDefinedValue(_, nme, tpe, impl) =>  impl.fold(
               s"val ${nme}: ${renderType(tpe)}"
             )(
               i =>
                 s"val ${nme}: ${renderType(tpe)} = ${renderValue(i.tail.value)}"
             )
-          case Term.ValueLevel.App1(_, _) => ""
-          case Term.ValueLevel.AppCtor1(_, _) => ""
-          case Term.ValueLevel.AppVargs(_, _) => ""
-          case Term.ValueLevel.Lam1(_, _) => ""
-          case Term.ValueLevel.Var.BooleanLiteral(_) => ""
-          case Term.ValueLevel.Var.IntLiteral(_) => ""
-          case Term.ValueLevel.AppVargs(_, _*) => ""
-          case Term.ValueLevel.Var.StringLiteral(_) => ""
-          case Term.ValueLevel.Var.ListCtor() => ""
+          case Term.ValueLevel.App1(_, _, _) => ""
+          case Term.ValueLevel.AppCtor1(_, _, _) => ""
+          case Term.ValueLevel.AppVargs(_, _, _) => ""
+          case Term.ValueLevel.Lam1(_, _, _) => ""
+          case Term.ValueLevel.Var.BooleanLiteral(_, _) => ""
+          case Term.ValueLevel.Var.IntLiteral(_, _) => ""
+          case Term.ValueLevel.AppVargs(_, _, _*) => ""
+          case Term.ValueLevel.Var.StringLiteral(_, _) => ""
+          case Term.ValueLevel.Var.ListCtor(_) => ""
 
       case TypeExpr(t) => 
         renderType(t)
@@ -54,29 +54,29 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
     private def renderType[T](tpe: Term.TypeLevel[T]): String =
       tpe match
         // application
-        case Term.TypeLevel.App1(tfun, targ) => s"${renderType(tfun)}[${renderType(targ)}]"
-        case Term.TypeLevel.App2(tfun, ta, tb) => s"${renderType(ta)} ${renderType(tfun)} ${renderType(tb)}"
+        case Term.TypeLevel.App1(qnt, tfun, targ) => s"${renderType(tfun)}[${renderType(targ)}]"
+        case Term.TypeLevel.App2(qnt, tfun, ta, tb) => s"${renderType(ta)} ${renderType(tfun)} ${renderType(tb)}"
         // primitive
-        case Term.TypeLevel.Var.BooleanType => "Boolean"
-        case Term.TypeLevel.Var.IntType => "Int"
-        case Term.TypeLevel.Var.StringType => "String"
+        case Term.TypeLevel.Var.BooleanType(_) => "Boolean"
+        case Term.TypeLevel.Var.IntType(_) => "Int"
+        case Term.TypeLevel.Var.StringType(_) => "String"
         // complex
-        case Term.TypeLevel.Var.Function1Type => "=>"
-        case Term.TypeLevel.Var.ListType => "List"
-        case Term.TypeLevel.Var.UserDefinedType(s, i) => s
+        case Term.TypeLevel.Var.Function1Type(_) => "=>"
+        case Term.TypeLevel.Var.ListType(_) => "List"
+        case Term.TypeLevel.Var.UserDefinedType(q, s, i) => s
 
     private def renderValue[T, X](value: Term.ValueLevel[T, X]): String =
       value match 
         // application
-        case Term.ValueLevel.App1(f, a) => s"${renderValue(f.tail.value)}(${renderValue(a.tail.value)})"
-        case Term.ValueLevel.AppCtor1(t, a) => s"${renderType(t)}(${renderValue(a.tail.value)})"
-        case Term.ValueLevel.AppVargs(f, as*) => s"${renderValue(f.tail.value)}(${as.map(a => renderValue(a.tail.value)).mkString(", ")})"
+        case Term.ValueLevel.App1(q, f, a) => s"${renderValue(f.tail.value)}(${renderValue(a.tail.value)})"
+        case Term.ValueLevel.AppCtor1(q, t, a) => s"${renderType(t)}(${renderValue(a.tail.value)})"
+        case Term.ValueLevel.AppVargs(q, f, as*) => s"${renderValue(f.tail.value)}(${as.map(a => renderValue(a.tail.value)).mkString(", ")})"
         // function
-        case Term.ValueLevel.Lam1(a, b) => s"${renderValue(a.tail.value)} => ${renderValue(b.tail.value)}"
+        case Term.ValueLevel.Lam1(q, a, b) => s"${renderValue(a.tail.value)} => ${renderValue(b.tail.value)}"
         // primitive
-        case Term.ValueLevel.Var.BooleanLiteral(b) => s"$b"
-        case Term.ValueLevel.Var.IntLiteral(i) => s"$i"
-        case Term.ValueLevel.Var.StringLiteral(s) => s"\"${s}\""
+        case Term.ValueLevel.Var.BooleanLiteral(q, b) => s"$b"
+        case Term.ValueLevel.Var.IntLiteral(q, i) => s"$i"
+        case Term.ValueLevel.Var.StringLiteral(q, s) => s"\"${s}\""
         // complex
-        case Term.ValueLevel.Var.ListCtor() => s"List"
-        case Term.ValueLevel.Var.UserDefinedValue(s, t, i) => s
+        case Term.ValueLevel.Var.ListCtor(q) => s"List"
+        case Term.ValueLevel.Var.UserDefinedValue(q, s, t, i) => s
