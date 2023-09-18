@@ -35,7 +35,7 @@ object Applications:
         for
           f <- tfunction
           a <- targs
-        yield TypeExpr(Term.TypeLevel.App1[T, A](None, f.tpe, a.tpe))
+        yield TypeExpr(Cofree((), Eval.now(Term.TypeLevel.App1(None, f.tpe, a.tpe))))
 
     extension [T[_,_]] (tfunction: StateT[ErrorF, List[Statement], TypeExpr[T[__, __]]])
       @scala.annotation.targetName("app2T")
@@ -44,7 +44,7 @@ object Applications:
           f <- tfunction
           a <- fta
           b <- ftb
-        yield TypeExpr(Term.TypeLevel.App2[T, A, B](None, f.tpe, a.tpe, b.tpe))
+        yield TypeExpr(Cofree((), Eval.now(Term.TypeLevel.App2(None, f.tpe, a.tpe, b.tpe))))
 
     extension [A, B] (function: StateT[ErrorF, List[Statement], ValueExpr[A => B]])
       @scala.annotation.targetName("app1V")

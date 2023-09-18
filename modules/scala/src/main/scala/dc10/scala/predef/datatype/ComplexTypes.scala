@@ -61,14 +61,14 @@ object ComplexTypes:
             case StringLiteral(_, _)    => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
             case ListCtor(_)          => Left(scala.List(IdentifierSymbolExpected(a.value.tail.value)))
             case UserDefinedValue(qnt, nme, tpe, impl) => Right[List[CompileError], Statement.ValueExpr[A => T]](ValueExpr[A => T](
-              Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(qnt, name, Term.TypeLevel.App2(None, Term.TypeLevel.Var.Function1Type(None), tpe, c.tpe), Some(f.value))))))
+              Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(qnt, name, Cofree((), Eval.now(Term.TypeLevel.App2(None, Cofree((), Eval.now(Term.TypeLevel.Var.Function1Type(None))), tpe, c.tpe))), Some(f.value))))))
         )
         d <- StateT.pure(Statement.CaseClassDef(c, 0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield (TypeExpr(c.tpe), v)
 
     def LIST: StateT[ErrorF, List[Statement], TypeExpr[List[__]]] =
-      StateT.pure(TypeExpr(Term.TypeLevel.Var.ListType(None)))
+      StateT.pure(TypeExpr(Cofree((), Eval.now(Term.TypeLevel.Var.ListType(None)))))
       
     def List[A]: StateT[ErrorF, List[Statement], ValueExpr[List[A] => List[A]]] =
       StateT.pure(ValueExpr(Cofree((), Eval.now(Term.ValueLevel.Var.ListCtor(None)))))

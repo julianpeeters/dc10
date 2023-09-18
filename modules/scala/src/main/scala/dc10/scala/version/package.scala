@@ -24,10 +24,10 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
       case d@ValDef(_, _) =>
         d.value.tail.value match
           case UserDefinedValue(_, nme, tpe, impl) =>  impl.fold(
-              s"val ${nme}: ${renderType(tpe)}"
+              s"val ${nme}: ${renderType(tpe.tail.value)}"
             )(
               i =>
-                s"val ${nme}: ${renderType(tpe)} = ${renderValue(i.tail.value)}"
+                s"val ${nme}: ${renderType(tpe.tail.value)} = ${renderValue(i.tail.value)}"
             )
           case Term.ValueLevel.App1(_, _, _) => ""
           case Term.ValueLevel.AppCtor1(_, _, _) => ""
@@ -40,7 +40,7 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
           case Term.ValueLevel.Var.ListCtor(_) => ""
 
       case TypeExpr(t) => 
-        renderType(t)
+        renderType(t.tail.value)
       case ValueExpr(v) => 
         renderValue(v.tail.value)
     ).mkString("\n")
@@ -51,11 +51,11 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
     override def version: "scala-3.3.0" =
       "scala-3.3.0"
 
-    private def renderType[T](tpe: Term.TypeLevel[T]): String =
+    private def renderType[T, X](tpe: Term.TypeLevel[T, X]): String =
       tpe match
         // application
-        case Term.TypeLevel.App1(qnt, tfun, targ) => s"${renderType(tfun)}[${renderType(targ)}]"
-        case Term.TypeLevel.App2(qnt, tfun, ta, tb) => s"${renderType(ta)} ${renderType(tfun)} ${renderType(tb)}"
+        case Term.TypeLevel.App1(qnt, tfun, targ) => s"${renderType(tfun.tail.value)}[${renderType(targ.tail.value)}]"
+        case Term.TypeLevel.App2(qnt, tfun, ta, tb) => s"${renderType(ta.tail.value)} ${renderType(tfun.tail.value)} ${renderType(tb.tail.value)}"
         // primitive
         case Term.TypeLevel.Var.BooleanType(_) => "Boolean"
         case Term.TypeLevel.Var.IntType(_) => "Int"
@@ -69,7 +69,7 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
       value match 
         // application
         case Term.ValueLevel.App1(q, f, a) => s"${renderValue(f.tail.value)}(${renderValue(a.tail.value)})"
-        case Term.ValueLevel.AppCtor1(q, t, a) => s"${renderType(t)}(${renderValue(a.tail.value)})"
+        case Term.ValueLevel.AppCtor1(q, t, a) => s"${renderType(t.tail.value)}(${renderValue(a.tail.value)})"
         case Term.ValueLevel.AppVargs(q, f, as*) => s"${renderValue(f.tail.value)}(${as.map(a => renderValue(a.tail.value)).mkString(", ")})"
         // function
         case Term.ValueLevel.Lam1(q, a, b) => s"${renderValue(a.tail.value)} => ${renderValue(b.tail.value)}"
