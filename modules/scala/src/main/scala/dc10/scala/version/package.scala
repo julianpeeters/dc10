@@ -9,8 +9,8 @@ import dc10.scala.ast.Symbol.Term.ValueLevel.{App1, AppCtor1, AppVargs, Lam1}
 import dc10.scala.ast.Symbol.Term.ValueLevel.Var.{BooleanLiteral, IntLiteral, StringLiteral, ListCtor, UserDefinedValue}
 import dc10.scala.error.CompileError
 
-given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
-  new Renderer["scala-3.3.0", CompileError, List[Statement]]:
+given `3.3.1`: Renderer["scala-3.3.1", CompileError, List[Statement]] =
+  new Renderer["scala-3.3.1", CompileError, List[Statement]]:
 
     def render(input: List[Statement]): String = input.map(stmt => stmt match
       case d@CaseClassDef(_, _) =>
@@ -48,8 +48,8 @@ given `3.3.0`: Renderer["scala-3.3.0", CompileError, List[Statement]] =
     def renderErrors(errors: List[CompileError]): String =
       errors.map(_.toString()).mkString("\n")
 
-    override def version: "scala-3.3.0" =
-      "scala-3.3.0"
+    override def version: "scala-3.3.1" =
+      "scala-3.3.1"
 
     private def renderType[T, X](tpe: Term.TypeLevel[T, X]): String =
       tpe match

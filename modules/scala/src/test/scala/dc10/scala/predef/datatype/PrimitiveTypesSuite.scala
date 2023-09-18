@@ -11,7 +11,7 @@ class PrimitiveTypeSuite extends FunSuite:
 
   // compile
   import dc10.scala.compiler.{compile, toString}
-  import dc10.scala.version.`3.3.0`
+  import dc10.scala.version.`3.3.1`
 
   test("val dec"):
 
@@ -26,7 +26,7 @@ class PrimitiveTypeSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toString["scala-3.3.1"]
       
     val expected: String =
       """|val t: Boolean
@@ -51,7 +51,7 @@ class PrimitiveTypeSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toString["scala-3.3.1"]
       
     val expected: String =
       """|val t: Boolean = true

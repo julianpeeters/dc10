@@ -7,6 +7,6 @@ trait Config[V]:
 
 object Config:
   
-  given Config["scala-3.3.0"] =
-    new Config["scala-3.3.0"]:
+  given Config["scala-3.3.1"] =
+    new Config["scala-3.3.1"]:
       def target: Path = Path.of("")

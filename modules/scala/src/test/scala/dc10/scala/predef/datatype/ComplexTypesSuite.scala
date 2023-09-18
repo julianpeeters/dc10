@@ -6,7 +6,7 @@ import munit.FunSuite
 
 import dc10.scala.compiler.{compile, toString}
 import dc10.scala.dsl.{*, given}
-import dc10.scala.version.`3.3.0`
+import dc10.scala.version.`3.3.1`
 
 class ComplexTypesSuite extends FunSuite:
 
@@ -17,7 +17,7 @@ class ComplexTypesSuite extends FunSuite:
     def ast = CASECLASS[Person, String]("Person", VAL("name", STRING))
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toString["scala-3.3.1"]
       
     val expected: String =
       """case class Person(val name: String)""".stripMargin
@@ -35,7 +35,7 @@ class ComplexTypesSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toString["scala-3.3.1"]
       
     val expected: String =
       """|val l1: List[Int]
@@ -56,7 +56,7 @@ class ComplexTypesSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toString["scala-3.3.1"]
       
     val expected: String =
       """|val l1: List[Int] = List(1, 2, 3)
