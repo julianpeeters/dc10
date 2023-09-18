@@ -27,7 +27,7 @@ object Variables:
     ): StateT[ErrorF, List[Statement], ValueExpr[T]] =
       for
         t <- tpe
-        v <- StateT.pure[ErrorF, List[Statement], Term.Value[T]](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(nme, t.tpe, None))))
+        v <- StateT.pure[ErrorF, List[Statement], Term.Value[T]](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(None, nme, t.tpe, None))))
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield ValueExpr(v)
@@ -41,7 +41,7 @@ object Variables:
       for
         t <- tpe
         i <- impl
-        v <- StateT.pure[ErrorF, List[Statement], Term.Value[T]](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(nme, t.tpe, Some(i.value)))))
+        v <- StateT.pure[ErrorF, List[Statement], Term.Value[T]](Cofree((), Eval.now(Term.ValueLevel.Var.UserDefinedValue(None, nme, t.tpe, Some(i.value)))))
         d <- StateT.pure[ErrorF, List[Statement], ValDef](ValDef(v)(0))
         _ <- StateT.modifyF[ErrorF, List[Statement]](ctx => ctx.ext(d))
       yield ValueExpr(v)

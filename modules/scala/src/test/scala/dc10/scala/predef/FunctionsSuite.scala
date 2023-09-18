@@ -4,7 +4,7 @@ import _root_.scala.language.implicitConversions
 import cats.implicits.*
 import dc10.scala.compiler.{compile, toString}
 import dc10.scala.dsl.{*, given}
-import dc10.scala.version.`3.3.0`
+import dc10.scala.version.`3.3.1`
 import munit.FunSuite
 
 class FunctionsSuite extends FunSuite:
@@ -17,7 +17,7 @@ class FunctionsSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toString["scala-3.3.1"]
       
     val expected: String =
       """val f1: Int => String""".stripMargin
@@ -36,7 +36,7 @@ class FunctionsSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.0"]
+      ast.compile.toString["scala-3.3.1"]
       
     val expected: String =
       """|val f1: String => String = input => input

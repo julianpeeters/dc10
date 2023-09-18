@@ -1,5 +1,6 @@
 package dc10.scala.ast
 
+import cats.Eval
 import cats.free.Cofree
 import dc10.scala.ast.Symbol.Term.{TypeLevel, ValueLevel}
 import java.nio.file.Path
@@ -12,19 +13,20 @@ object Symbol:
   sealed abstract class CaseClass[T] extends Symbol:
     type Tpe = T
     def nme: String
-    def tpe: Term.TypeLevel.Var.UserDefinedType[T]
+    def tpe: Term.Type[T]
     def fields: List[Statement.ValDef]
     def body: List[Statement]
 
   object CaseClass:
     def apply[T](
+      q: Option[Long],
       n: String,
       fs: List[Statement.ValDef],
     ): CaseClass[T] =
       new CaseClass[T]:
         type Tpe = T
         def nme = n
-        def tpe: Term.TypeLevel.Var.UserDefinedType[T] = Term.TypeLevel.Var.UserDefinedType[T](n, None)
+        def tpe: Term.Type[T] = Cofree((), Eval.now(Term.TypeLevel.Var.UserDefinedType(q, n, None)))
         def fields = fs
         def body = Nil
 
@@ -54,37 +56,37 @@ object Symbol:
     ) extends Package
 
   // Term /////////////////////////////////////////////////////////////////////
-  sealed abstract class Term extends Symbol
+  sealed abstract class Term extends Symbol:
+    def qnt: Option[Long]
 
   object Term:
 
-    sealed trait TypeLevel[T] extends Term
+    type Type[T] = Cofree[[X] =>> TypeLevel[T, X], Unit]
+    sealed trait TypeLevel[T, X] extends Term
     object TypeLevel:
       type __
-      case class App1[T[_], A](tfun: TypeLevel[T[__]], targ: TypeLevel[A]) extends TypeLevel[T[A]]
-      case class App2[T[_,_], A, B](tfun: TypeLevel[T[__,__]], ta: TypeLevel[A], tb: TypeLevel[B]) extends TypeLevel[T[A, B]]
-      sealed trait Lam1[F[_]] extends TypeLevel[F[__]]
-      sealed trait Lam2[F[_,_]] extends TypeLevel[F[__,__]]
-      sealed abstract class Var[T] extends TypeLevel[T]
+      case class App1[T[_], A, X](qnt: Option[Long], tfun: Type[T[__]], targ: Type[A]) extends TypeLevel[T[A], X]
+      case class App2[T[_,_], A, B, X](qnt: Option[Long], tfun: Type[T[__,__]], ta: Type[A], tb: Type[B]) extends TypeLevel[T[A, B], X]
+      sealed abstract class Var[T, X] extends TypeLevel[T, X]
       object Var:
-        case object BooleanType extends Var[Boolean]
-        case object IntType extends Var[Int]
-        case object StringType extends Var[String]
-        case object Function1Type extends Var[__ => __]
-        case object ListType extends Var[List[__]]
-        case class UserDefinedType[T](nme: String, impl: Option[TypeLevel[T]]) extends Var[T]
+        case class BooleanType[X](qnt: Option[Long]) extends Var[Boolean, X]
+        case class IntType[X](qnt: Option[Long]) extends Var[Int, X]
+        case class StringType[X](qnt: Option[Long]) extends Var[String, X]
+        case class Function1Type[X](qnt: Option[Long]) extends Var[__ => __, X]
+        case class ListType[X](qnt: Option[Long]) extends Var[List[__], X]
+        case class UserDefinedType[T, X](qnt: Option[Long], nme: String, impl: Option[Type[T]]) extends Var[T, X]
         
     type Value[T] = Cofree[[X] =>> ValueLevel[T, X], Unit]
     sealed trait ValueLevel[T, X] extends Term
     object ValueLevel:
-      case class App1[A, B, X](fun: Value[A => B], arg: Value[A]) extends Term.ValueLevel[B, X]
-      case class AppCtor1[T, A, X](tpe: TypeLevel[T], arg: Value[A]) extends Term.ValueLevel[T, X]
-      case class AppVargs[A, B, X](fun: Value[List[A] => B], vargs: Value[A]*) extends Term.ValueLevel[B, X]
-      case class Lam1[A, B, X](a: Value[A], b: Value[B]) extends Term.ValueLevel[A => B, X]
+      case class App1[A, B, X](qnt: Option[Long], fun: Value[A => B], arg: Value[A]) extends Term.ValueLevel[B, X]
+      case class AppCtor1[T, A, X](qnt: Option[Long], tpe: Type[T], arg: Value[A]) extends Term.ValueLevel[T, X]
+      case class AppVargs[A, B, X](qnt: Option[Long], fun: Value[List[A] => B], vargs: Value[A]*) extends Term.ValueLevel[B, X]
+      case class Lam1[A, B, X](qnt: Option[Long], a: Value[A], b: Value[B]) extends Term.ValueLevel[A => B, X]
       sealed abstract class Var[T, X] extends Term.ValueLevel[T, X]
       object Var:
-        case class BooleanLiteral[X](b: Boolean) extends Var[Boolean, X]
-        case class IntLiteral[X](i: Int) extends Var[Int, X]
-        case class StringLiteral[X](s: String) extends Var[String, X]
-        case class ListCtor[A, X]() extends Var[List[A] => List[A], X]
-        case class UserDefinedValue[T, X](nme: String, tpe: TypeLevel[T], impl: Option[Value[T]]) extends Var[T, X]
+        case class BooleanLiteral[X](qnt: Option[Long], b: Boolean) extends Var[Boolean, X]
+        case class IntLiteral[X](qnt: Option[Long], i: Int) extends Var[Int, X]
+        case class StringLiteral[X](qnt: Option[Long], s: String) extends Var[String, X]
+        case class ListCtor[A, X](qnt: Option[Long]) extends Var[List[A] => List[A], X]
+        case class UserDefinedValue[T, X](qnt: Option[Long], nme: String, tpe: Type[T], impl: Option[Value[T]]) extends Var[T, X]

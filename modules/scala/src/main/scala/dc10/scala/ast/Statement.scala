@@ -71,7 +71,7 @@ object Statement:
         def value: Term.Value[T] = v
 
 
-  case class TypeExpr[T](tpe: Term.TypeLevel[T]) extends Statement:
+  case class TypeExpr[T](tpe: Term.Type[T]) extends Statement:
     def indent: Int = 0
     def sp: SourcePos = summon[SourcePos]
 
