@@ -2,21 +2,24 @@ package dc10.compile
 
 import cats.kernel.Monoid
 
-trait Compiler[F[_], G[_]]:
+trait Compiler[
+  F[_],              // Error functor in ctx
+  G[_],              // Output unit, e.g., List, Id, etc.
+  E,                 // Error type
+  A,                 // Code level, representing symbols introduced into ctx
+  B                  // File level, representing a source file of path and ast
+]:
 
-  type Ctx[_[_], _, _]  // Monadic context, in which to build up ASTs and then compile them.
-  type Def              // Definition level, representing introduction into the context.
-  type Err              // Error type, parameterizing the context and the compilation results.
-  type Fil              // File level, representing a source file with path and ast.
-  
+  type Ctx[_[_],_,_] // Monadic context, to build up ASTs and then compile them
+
   extension [L: Monoid, A] (ast: Ctx[F, L, A])
     def compile: F[L]
 
-  extension (res: F[G[Def]])
-    def toString[V](using R: Renderer[V, Err, G[Def]]): String
+  extension (res: F[G[A]])
+    def toString[V](using R: Renderer[V, E, G[A]]): String
 
-  extension (res: F[G[Def]])
-    def toStringOrError[V](using R: Renderer[V, Err, G[Def]]): F[String]
+  extension (res: F[G[A]])
+    def toStringOrError[V](using R: Renderer[V, E, G[A]]): F[String]
 
-  extension (res: F[List[Fil]])
-    def toVirtualFile[V](using R: Renderer[V, Err, G[Def]]): F[List[VirtualFile]]
+  extension (res: F[G[B]])
+    def toVirtualFile[V](using R: Renderer[V, E, G[A]]): F[List[VirtualFile]]

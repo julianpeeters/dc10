@@ -6,12 +6,15 @@ import dc10.compile.{Compiler, Renderer, VirtualFile}
 import dc10.scala.ast.{ScalaFile, Statement}
 import dc10.scala.error.{CompileError, ErrorF}
 
-implicit object compiler extends Compiler[ErrorF, List]:
+implicit object compiler extends Compiler[
+  ErrorF,
+  List,
+  CompileError,
+  Statement,
+  ScalaFile
+]:
 
   type Ctx[F[_], L, A] = StateT[F, L, A]
-  type Def = Statement
-  type Err = CompileError
-  type Fil = ScalaFile
 
   extension [L: Monoid, A] (ast: StateT[ErrorF, L, A])
     def compile: ErrorF[L] =

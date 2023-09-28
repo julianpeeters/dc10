@@ -3,27 +3,24 @@ package dc10.scala.version
 import dc10.compile.Renderer
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{CaseClassDef, PackageDef, TypeExpr, ValDef, ValueExpr}
-import dc10.scala.ast.Symbol.Package.{Basic, Empty}
+import dc10.scala.ast.Symbol.Package
 import dc10.scala.ast.Symbol.Term
 import dc10.scala.ast.Symbol.Term.ValueLevel.{App1, AppCtor1, AppVargs, Lam1}
-import dc10.scala.ast.Symbol.Term.ValueLevel.Var.{BooleanLiteral, IntLiteral, StringLiteral, ListCtor, UserDefinedValue}
 import dc10.scala.error.CompileError
 
 given `3.3.1`: Renderer["scala-3.3.1", CompileError, List[Statement]] =
   new Renderer["scala-3.3.1", CompileError, List[Statement]]:
 
-    def render(input: List[Statement]): String = input.map(stmt => stmt match
+    override def render(input: List[Statement]): String = input.map(stmt => stmt match
       case d@CaseClassDef(_, _) =>
         s"case class ${d.caseclass.nme}(${render(d.caseclass.fields).mkString})"
       case d@Statement.ObjectDef(_, _, _) =>
         ???
       case d@PackageDef(_, _) =>
-        d.pkg match
-          case Basic(nme, nst) => s"package ${nme}\n\n"
-          case Empty(ms) => render(ms)
+        renderPackage(d.pkg)
       case d@ValDef(_, _) =>
         d.value.tail.value match
-          case UserDefinedValue(_, nme, tpe, impl) =>  impl.fold(
+          case Term.ValueLevel.Var.UserDefinedValue(_, nme, tpe, impl) => impl.fold(
               s"val ${nme}: ${renderType(tpe.tail.value)}"
             )(
               i =>
@@ -45,12 +42,17 @@ given `3.3.1`: Renderer["scala-3.3.1", CompileError, List[Statement]] =
         renderValue(v.tail.value)
     ).mkString("\n")
 
-    def renderErrors(errors: List[CompileError]): String =
+    override def renderErrors(errors: List[CompileError]): String =
       errors.map(_.toString()).mkString("\n")
 
     override def version: "scala-3.3.1" =
       "scala-3.3.1"
 
+    private def renderPackage(pkg: Package): String =
+      pkg match
+        case Package.Basic(nme, pkgdef) => s"package ${nme}\n\n${renderPackage(pkgdef.pkg)}"
+        case Package.Empty(ms) => render(ms)
+      
     private def renderType[T, X](tpe: Term.TypeLevel[T, X]): String =
       tpe match
         // application
