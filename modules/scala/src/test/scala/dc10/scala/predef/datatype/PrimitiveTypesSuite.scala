@@ -42,12 +42,12 @@ class PrimitiveTypeSuite extends FunSuite:
 
     def ast =
       for
-        _ <- VAL("t", BOOLEAN, true)
-        _ <- VAL("f", BOOLEAN, false)
-        _ <- VAL("age", INT, 101)
-        _ <- VAL("year", INT, 2020)
-        _ <- VAL("greeting", STRING, "hello, world")
-        _ <- VAL("farewell", STRING, "goodbye, world")
+        _ <- VAL("t", BOOLEAN)(true)
+        _ <- VAL("f", BOOLEAN)(false)
+        _ <- VAL("age", INT)(101)
+        _ <- VAL("year", INT)(2020)
+        _ <- VAL("greeting", STRING)("hello, world")
+        _ <- VAL("farewell", STRING)("goodbye, world")
       yield ()
     
     val obtained: String =
