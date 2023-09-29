@@ -31,11 +31,6 @@ lazy val `dc10-compile` = (project in file("modules/compile"))
   .settings(
     commonSettings,
     name := "dc10-compile",
-    libraryDependencies ++= Seq(
-      "org.tpolecat"  %% "sourcepos" % SourcePosV,
-      "org.typelevel" %% "cats-core" % CatsV,
-      "org.typelevel" %% "cats-free" % CatsV,
-    )
   )
 
 lazy val `dc10-io` = (project in file("modules/io"))
@@ -53,4 +48,9 @@ lazy val `dc10-scala` = (project in file("modules/scala"))
   .settings(
     commonSettings,
     name := "dc10-scala",
+    libraryDependencies ++= Seq(
+      "org.tpolecat"  %% "sourcepos" % SourcePosV,
+      "org.typelevel" %% "cats-core" % CatsV,
+      "org.typelevel" %% "cats-free" % CatsV,
+    )
   )
