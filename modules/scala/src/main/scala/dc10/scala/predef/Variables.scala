@@ -12,7 +12,7 @@ import org.tpolecat.sourcepos.SourcePos
 
 trait Variables[F[_]]:
   def VAL[T](nme: String, tpe: F[TypeExpr[T]])(using sp: SourcePos): F[ValueExpr[T]]
-  def VAL[T](nme: String, tpe: F[TypeExpr[T]])(impl: F[ValueExpr[T]])(using sp: SourcePos): F[ValueExpr[T]]
+  def VAL[T](nme: String, tpe: F[TypeExpr[T]], impl: F[ValueExpr[T]])(using sp: SourcePos): F[ValueExpr[T]]
   given refV[T]: Conversion[ValueExpr[T], F[ValueExpr[T]]]
 
 object Variables:
@@ -34,8 +34,7 @@ object Variables:
 
     def VAL[T](
       nme: String,
-      tpe: StateT[ErrorF, List[Statement], TypeExpr[T]]
-    )( 
+      tpe: StateT[ErrorF, List[Statement], TypeExpr[T]], 
       impl: StateT[ErrorF, List[Statement], ValueExpr[T]]
     )(using sp: SourcePos): StateT[ErrorF, List[Statement], ValueExpr[T]] =
       for
