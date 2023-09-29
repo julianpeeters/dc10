@@ -28,11 +28,11 @@ class FunctionsSuite extends FunSuite:
     
     def ast =
       for
-        f <- VAL("f1", STRING ==> STRING,
+        f <- VAL("f1", STRING ==> STRING)(
           VAL("input", STRING) ==> (s => s)
         )
-        b <- VAL("b", STRING, f("hello"))
-        _ <- VAL("c", STRING, f(b))
+        b <- VAL("b", STRING)(f("hello"))
+        _ <- VAL("c", STRING)(f(b))
       yield ()
     
     val obtained: String =
