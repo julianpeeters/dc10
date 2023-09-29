@@ -15,7 +15,6 @@ implicit object compiler extends Compiler[
 ]:
 
   type Ctx[F[_], L, A] = StateT[F, L, A]
-  // type L
 
   extension [C, D] (ast: StateT[ErrorF, List[D], C])
     def compile: ErrorF[List[D]] =

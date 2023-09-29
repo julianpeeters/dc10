@@ -3,7 +3,7 @@ val Fs2V = "3.7.0"
 val MUnitV = "0.7.29"
 val SourcePosV = "1.1.0"
 
-ThisBuild / description := "Purely functional Scala code generation."
+ThisBuild / description := "Scala code generation tools."
 ThisBuild / organization := "com.julianpeeters"
 ThisBuild / scalaVersion := "3.3.1"
 ThisBuild / version := "0.1.0-SNAPSHOT"
@@ -18,9 +18,6 @@ lazy val commonSettings = Seq(
     "-Wunused:all",
     "-Wvalue-discard"
   ),
-  libraryDependencies ++= Seq(
-    "org.scalameta" %% "munit" % MUnitV % Test
-  )
 )
 
 lazy val dc10 = (project in file("."))
@@ -52,5 +49,6 @@ lazy val `dc10-scala` = (project in file("modules/scala"))
       "org.tpolecat"  %% "sourcepos" % SourcePosV,
       "org.typelevel" %% "cats-core" % CatsV,
       "org.typelevel" %% "cats-free" % CatsV,
+      "org.scalameta" %% "munit" % MUnitV % Test
     )
   )
