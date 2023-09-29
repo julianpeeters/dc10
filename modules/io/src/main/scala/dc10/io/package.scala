@@ -10,11 +10,10 @@ extension [
   F[_]: Concurrent: Files,
   G[_]: Foldable,
   H[_],
-  L[_],
   E,
   A,
   B
-](res: G[H[B]])(using C: Compiler[G, H, L, E, A, B])
+](res: G[H[B]])(using C: Compiler[G, H, E, A, B])
   def toFile[V](using R: Renderer[V, E, H[A]]): F[List[Path]] =
     C.toVirtualFile(res)
       .foldMapM(e => e.traverse(s => FileWriter[F].writeFile(s)))

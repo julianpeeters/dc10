@@ -1,15 +1,22 @@
-val CatsV = "2.9.0"
-val Fs2V = "3.7.0"
+val CatsV = "2.10.0"
+val Fs2V = "3.9.2"
 val MUnitV = "0.7.29"
 val SourcePosV = "1.1.0"
 
-ThisBuild / description := "Scala code generation tools."
-ThisBuild / organization := "com.julianpeeters"
-ThisBuild / scalaVersion := "3.3.1"
-ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / versionScheme := Some("semver-spec")
-
-lazy val commonSettings = Seq(
+inThisBuild(List(
+  crossScalaVersions := Seq(scalaVersion.value),
+  description := "Scala code generation tools.",
+  organization := "com.julianpeeters",
+  homepage := Some(url("https://github.com/julianpeeters/dc10")),
+  licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  developers := List(
+    Developer(
+      "julianpeeters",
+      "Julian Peeters",
+      "julianpeeters@gmail.com",
+      url("http://github.com/julianpeeters")
+    )
+  ),
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
@@ -18,7 +25,9 @@ lazy val commonSettings = Seq(
     "-Wunused:all",
     "-Wvalue-discard"
   ),
-)
+  scalaVersion := "3.3.1",
+  versionScheme := Some("semver-spec"),
+))
 
 lazy val dc10 = (project in file("."))
   .settings(name := "dc10")
@@ -26,14 +35,12 @@ lazy val dc10 = (project in file("."))
 
 lazy val `dc10-compile` = (project in file("modules/compile"))
   .settings(
-    commonSettings,
     name := "dc10-compile",
   )
 
 lazy val `dc10-io` = (project in file("modules/io"))
   .dependsOn(`dc10-compile`)
   .settings(
-    commonSettings,
     name := "dc10-io",
     libraryDependencies ++= Seq(
       "co.fs2" %% "fs2-io" % Fs2V
@@ -43,12 +50,13 @@ lazy val `dc10-io` = (project in file("modules/io"))
 lazy val `dc10-scala` = (project in file("modules/scala"))
   .dependsOn(`dc10-compile`)
   .settings(
-    commonSettings,
     name := "dc10-scala",
     libraryDependencies ++= Seq(
+      // main
       "org.tpolecat"  %% "sourcepos" % SourcePosV,
       "org.typelevel" %% "cats-core" % CatsV,
       "org.typelevel" %% "cats-free" % CatsV,
+      // test
       "org.scalameta" %% "munit" % MUnitV % Test
     )
   )

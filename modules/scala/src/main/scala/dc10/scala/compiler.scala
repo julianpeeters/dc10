@@ -8,7 +8,6 @@ import dc10.scala.error.{CompileError, ErrorF}
 implicit object compiler extends Compiler[
   ErrorF,
   List,
-  List,
   CompileError,
   Statement,
   ScalaFile
