@@ -60,3 +60,15 @@ lazy val `dc10-scala` = (project in file("modules/scala"))
       "org.scalameta" %% "munit" % MUnitV % Test
     )
   )
+
+lazy val docs = project.in(file("docs/gitignored"))
+  .settings(
+    mdocOut := dc10.base,
+    mdocVariables := Map(
+      "SCALA" -> crossScalaVersions.value.map(e => e.takeWhile(_ != '.')).mkString(", "),
+      "VERSION" -> version.value.takeWhile(_ != '+'),
+    )
+  )
+  .dependsOn(`dc10-compile`, `dc10-io`, `dc10-scala`)
+  .enablePlugins(MdocPlugin)
+  .enablePlugins(NoPublishPlugin)
