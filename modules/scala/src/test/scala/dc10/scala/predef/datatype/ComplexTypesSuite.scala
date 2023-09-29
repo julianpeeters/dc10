@@ -49,10 +49,10 @@ class ComplexTypesSuite extends FunSuite:
     
     def ast =
       for
-        _ <- VAL("l1", LIST(INT))(List(1, 2, 3))
-        a <- VAL("l2", LIST(STRING))(List("1", "2", "3"))
-        l <- VAL("l3", LIST(LIST(STRING)))(List(List("1", "2", "3"), List("4", "5", "6")))
-        _ <- VAL("l4", LIST(LIST(LIST(STRING))))(List(l, l))
+        _ <- VAL("l1", LIST(INT), List(1, 2, 3))
+        a <- VAL("l2", LIST(STRING), List("1", "2", "3"))
+        l <- VAL("l3", LIST(LIST(STRING)), List(List("1", "2", "3"), List("4", "5", "6")))
+        _ <- VAL("l4", LIST(LIST(LIST(STRING))), List(l, l))
       yield ()
     
     val obtained: String =
