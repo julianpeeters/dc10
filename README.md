@@ -8,9 +8,9 @@ A ***D**efinitional* ***C**ompiler* for defining and generating Scala code.
  - Libraries for Scala 3 (JVM only)
 
 ```
-"com.julianpeeters" %% "dc10-compile" % "0.1.0-SNAPSHOT"
-"com.julianpeeters" %% "dc10-io" % "0.1.0-SNAPSHOT"
-"com.julianpeeters" %% "dc10-scala" % "0.1.0-SNAPSHOT"
+"com.julianpeeters" %% "dc10-compile" % "0.1.0-SNAPSHOT",
+"com.julianpeeters" %% "dc10-io"      % "0.1.0-SNAPSHOT",
+"com.julianpeeters" %% "dc10-scala"   % "0.1.0-SNAPSHOT",
 ```
 
 ### Usage
