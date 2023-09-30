@@ -31,15 +31,15 @@ inThisBuild(List(
 
 lazy val dc10 = (project in file("."))
   .settings(name := "dc10")
-  .aggregate(`dc10-compile`, `dc10-io`, `dc10-scala`)
+  .aggregate(`dc10-core`, `dc10-io`, `dc10-scala`)
 
-lazy val `dc10-compile` = (project in file("modules/compile"))
+lazy val `dc10-core` = (project in file("modules/core"))
   .settings(
-    name := "dc10-compile",
+    name := "dc10-core",
   )
 
 lazy val `dc10-io` = (project in file("modules/io"))
-  .dependsOn(`dc10-compile`)
+  .dependsOn(`dc10-core`)
   .settings(
     name := "dc10-io",
     libraryDependencies ++= Seq(
@@ -48,7 +48,7 @@ lazy val `dc10-io` = (project in file("modules/io"))
   )
 
 lazy val `dc10-scala` = (project in file("modules/scala"))
-  .dependsOn(`dc10-compile`)
+  .dependsOn(`dc10-core`)
   .settings(
     name := "dc10-scala",
     libraryDependencies ++= Seq(
@@ -69,6 +69,6 @@ lazy val docs = project.in(file("docs/gitignored"))
       "VERSION" -> version.value.takeWhile(_ != '+'),
     )
   )
-  .dependsOn(`dc10-compile`, `dc10-io`, `dc10-scala`)
+  .dependsOn(`dc10-core`, `dc10-io`, `dc10-scala`)
   .enablePlugins(MdocPlugin)
   .enablePlugins(NoPublishPlugin)
