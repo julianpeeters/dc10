@@ -9,7 +9,7 @@ A ***D**efinitional* ***C**ompiler* for generating Scala code.
  - Generates code for Scala 3
 
 ```scala
-"com.julianpeeters" %% "dc10-<module>" % "0.0.0"
+"com.julianpeeters" %% "dc10-<module>" % "0.1.0"
 ```
 
 ### Usage
