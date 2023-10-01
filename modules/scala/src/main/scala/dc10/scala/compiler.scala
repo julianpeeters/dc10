@@ -1,7 +1,6 @@
 package dc10.scala
 
 import cats.data.StateT
-import cats.kernel.Monoid
 import dc10.compile.{Compiler, Renderer, VirtualFile}
 import dc10.scala.ast.{ScalaFile, Statement}
 import dc10.scala.error.{CompileError, ErrorF}
@@ -16,8 +15,8 @@ implicit object compiler extends Compiler[
 
   type Ctx[F[_], L, A] = StateT[F, L, A]
 
-  extension [L: Monoid, A] (ast: StateT[ErrorF, L, A])
-    def compile: ErrorF[L] =
+  extension [C, D] (ast: StateT[ErrorF, List[D], C])
+    def compile: ErrorF[List[D]] =
       ast.runEmptyS
 
   extension (res: ErrorF[List[Statement]])

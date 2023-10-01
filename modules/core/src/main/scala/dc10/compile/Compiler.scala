@@ -1,7 +1,5 @@
 package dc10.compile
 
-import cats.kernel.Monoid
-
 trait Compiler[
   F[_],              // Error functor in ctx
   G[_],              // Output unit, e.g., List, Id, etc.
@@ -12,8 +10,8 @@ trait Compiler[
 
   type Ctx[_[_],_,_] // Monadic context, to build up ASTs and then compile them
 
-  extension [L: Monoid, A] (ast: Ctx[F, L, A])
-    def compile: F[L]
+  extension [C, D] (ast: Ctx[F, List[D], C])
+    def compile: F[List[D]]
 
   extension (res: F[G[A]])
     def toString[V](using R: Renderer[V, E, G[A]]): String

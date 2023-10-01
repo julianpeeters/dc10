@@ -5,11 +5,11 @@ A ***D**efinitional* ***C**ompiler* for generating Scala code.
  - [`dc10-scala`](#dc10-scala): AST and dsl for defining and rendering Scala programs
 
 ### Getting Started
- - Libraries for Scala 3 (JVM only)
- - Generates code for Scala 3
+ - Libraries for Scala @SCALA@ (JVM only)
+ - Generates code for Scala @SCALA@
 
 ```scala
-"com.julianpeeters" %% "dc10-<module>" % "0.0.0"
+"com.julianpeeters" %% "dc10-<module>" % "@VERSION@"
 ```
 
 ### Usage
@@ -80,7 +80,7 @@ _.toFile["scala-3.3.1"]
 
 Use the dsl to define Scala code:
 
-```scala
+```scala mdoc:silent
 import cats.data.StateT
 import dc10.scala.ast.Statement
 import dc10.scala.dsl.{*, given}
@@ -96,11 +96,9 @@ val snippet: StateT[ErrorF, List[Statement], Unit] =
 
 Use the compiler impl to check and render code to `String` or `VirtualFile`:
 
-```scala
+```scala mdoc
 import dc10.scala.compiler.{compile, toString}
 import dc10.scala.version.`3.3.1`
 
 val result: String = snippet.compile.toString["scala-3.3.1"]
-// result: String = """val str: String = "hello, world"
-// val msg: String = str"""
 ```
