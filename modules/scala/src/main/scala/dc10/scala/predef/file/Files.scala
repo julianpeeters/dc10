@@ -25,7 +25,7 @@ object Files:
         (ms, a) <- StateT.liftF[ErrorF, List[ScalaFile], (List[Statement], A)](statements.runEmpty)
         n <- StateT.pure[ErrorF, List[ScalaFile], Path](Path.of(nme))
         p <- StateT.pure[ErrorF, List[ScalaFile], Statement.PackageDef](
-          Statement.PackageDef(0, Symbol.Package.Empty(ms)))
+          Statement.PackageDef(Symbol.Package.Empty(ms), 0))
         d <- StateT.pure[ErrorF, List[ScalaFile], ScalaFile](ScalaFile(n, List(p)))
         _ <- StateT.modifyF[ErrorF, List[ScalaFile]](ctx => ctx.ext(d))
       yield a

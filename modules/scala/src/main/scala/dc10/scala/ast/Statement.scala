@@ -1,7 +1,7 @@
 package dc10.scala.ast
 
 import org.tpolecat.sourcepos.SourcePos
-import Symbol.{CaseClass, Package, Term}
+import Symbol.{CaseClass, Object, Package, Term}
 
 sealed trait Statement:
   def indent: Int
@@ -27,11 +27,23 @@ object Statement:
         type Tpe = T
         def caseclass: CaseClass[T] = v
 
-  case class ObjectDef(
-    module: Object,
+  sealed abstract case class ObjectDef(
     indent: Int,
     sp: SourcePos
-  ) extends Statement
+  ) extends Statement:
+    type Tpe
+    def obj: Object[Tpe]
+
+  object ObjectDef:
+    def apply[T](
+      o: Object[T],
+      i: Int
+    )(
+      using sp: SourcePos
+    ): ObjectDef =
+      new ObjectDef(i, sp):
+        type Tpe = T
+        def obj: Object[T] = o
 
   sealed abstract case class PackageDef(
     indent: Int,
@@ -41,8 +53,8 @@ object Statement:
 
   object PackageDef:
     def apply[T](
+      p: Package,
       i: Int,
-      p: Package
     )(
       using sp: SourcePos
     ): PackageDef =

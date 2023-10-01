@@ -9,7 +9,7 @@ A ***D**efinitional* ***C**ompiler* for generating Scala code.
  - Generates code for Scala 3
 
 ```scala
-"com.julianpeeters" %% "dc10-<module>" % "0.1.0"
+"com.julianpeeters" %% "dc10-<module>" % "0.2.0"
 ```
 
 ### Usage
@@ -19,7 +19,7 @@ The `compile` package provides abstractions for defining and rendering code:
 
 <details><summary>Compiler</summary>
 
-```
+```scala
 package dc10.compile
 
 trait Compiler[
@@ -48,7 +48,7 @@ trait Compiler[
 
 <details><summary>Renderer</summary>
 
-```
+```scala
 package dc10.compile
 
 trait Renderer[V, E, A]:
@@ -60,7 +60,7 @@ trait Renderer[V, E, A]:
 
 <details><summary>VirtualFile</summary>
 
-```
+```scala
 package dc10.compile
 
 import java.nio.file.Path

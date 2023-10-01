@@ -40,7 +40,7 @@ object ComplexTypes:
         fs <- StateT.liftF(
           fields.traverse(field => field match
             case d@Statement.CaseClassDef(_,_) => Left(scala.List(IdentifierStatementExpected(d)))
-            case d@Statement.ObjectDef(_,_,_)  => Left(scala.List(IdentifierStatementExpected(d)))
+            case d@Statement.ObjectDef(_,_)    => Left(scala.List(IdentifierStatementExpected(d)))
             case d@Statement.PackageDef(_,_)   => Left(scala.List(IdentifierStatementExpected(d)))
             case d@Statement.ValDef(_,_)       => Right[List[CompileError], Statement.ValDef](d)
             case d@Statement.TypeExpr(_)       => Left(scala.List(IdentifierStatementExpected(d)))
