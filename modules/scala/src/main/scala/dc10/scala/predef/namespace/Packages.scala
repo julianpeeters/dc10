@@ -21,7 +21,7 @@ object Packages:
         (ms, a) <- StateT.liftF[ErrorF, List[ScalaFile], (List[ScalaFile], A)](files.runEmpty)
         ss = ms.map(s => s.copy(
           path = Path.of(nme).resolve(s.path),
-          contents = List[Statement](Statement.PackageDef(0, Symbol.Package.Basic(nme, Statement.PackageDef(0, Symbol.Package.Empty(s.contents)))))
+          contents = List[Statement](Statement.PackageDef(Symbol.Package.Basic(nme, Statement.PackageDef(Symbol.Package.Empty(s.contents), 0)), 0))
         ))
         _ <- ss.traverse(d => StateT.modifyF[ErrorF, List[ScalaFile]](ctx => ctx.ext(d)))
       yield a

@@ -3,7 +3,7 @@ package dc10.scala.version
 import dc10.compile.Renderer
 import dc10.scala.ast.Statement
 import dc10.scala.ast.Statement.{CaseClassDef, PackageDef, TypeExpr, ValDef, ValueExpr}
-import dc10.scala.ast.Symbol.Package
+import dc10.scala.ast.Symbol.{Object, Package}
 import dc10.scala.ast.Symbol.Term
 import dc10.scala.ast.Symbol.Term.ValueLevel.{App1, AppCtor1, AppVargs, Lam1}
 import dc10.scala.error.CompileError
@@ -13,13 +13,13 @@ given `3.3.1`: Renderer["scala-3.3.1", CompileError, List[Statement]] =
 
     override def render(input: List[Statement]): String = input.map(stmt => stmt match
       case d@CaseClassDef(_, _) =>
-        s"case class ${d.caseclass.nme}(${render(d.caseclass.fields).mkString})"
-      case d@Statement.ObjectDef(_, _, _) =>
-        ???
+        indent(d.indent) ++ s"case class ${d.caseclass.nme}(${render(d.caseclass.fields).mkString})"
+      case d@Statement.ObjectDef(_, _) =>
+        indent(d.indent) ++ renderObject(d.obj)
       case d@PackageDef(_, _) =>
-        renderPackage(d.pkg)
+        indent(d.indent) ++ renderPackage(d.pkg)
       case d@ValDef(_, _) =>
-        d.value.tail.value match
+        indent(d.indent) ++ (d.value.tail.value match
           case Term.ValueLevel.Var.UserDefinedValue(_, nme, tpe, impl) => impl.fold(
               s"val ${nme}: ${renderType(tpe.tail.value)}"
             )(
@@ -35,11 +35,12 @@ given `3.3.1`: Renderer["scala-3.3.1", CompileError, List[Statement]] =
           case Term.ValueLevel.AppVargs(_, _, _*) => ""
           case Term.ValueLevel.Var.StringLiteral(_, _) => ""
           case Term.ValueLevel.Var.ListCtor(_) => ""
+        )
 
-      case TypeExpr(t) => 
-        renderType(t.tail.value)
-      case ValueExpr(v) => 
-        renderValue(v.tail.value)
+      case e@TypeExpr(t) => 
+        indent(e.indent) ++ renderType(t.tail.value)
+      case e@ValueExpr(v) => 
+        indent(e.indent) ++ renderValue(v.tail.value)
     ).mkString("\n")
 
     override def renderErrors(errors: List[CompileError]): String =
@@ -47,6 +48,12 @@ given `3.3.1`: Renderer["scala-3.3.1", CompileError, List[Statement]] =
 
     override def version: "scala-3.3.1" =
       "scala-3.3.1"
+
+    private def indent(i: Int): String =
+      "  ".repeat(i)
+
+    private def renderObject[T](obj: Object[T]): String =
+      s"object ${obj.nme}:\n\n${render(obj.body)}"
 
     private def renderPackage(pkg: Package): String =
       pkg match

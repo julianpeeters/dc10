@@ -11,7 +11,6 @@ object Symbol:
 
   // Templates ////////////////////////////////////////////////////////////////
   sealed abstract class CaseClass[T] extends Symbol:
-    type Tpe = T
     def nme: String
     def tpe: Term.Type[T]
     def fields: List[Statement.ValDef]
@@ -24,11 +23,27 @@ object Symbol:
       fs: List[Statement.ValDef],
     ): CaseClass[T] =
       new CaseClass[T]:
-        type Tpe = T
         def nme = n
         def tpe: Term.Type[T] = Cofree((), Eval.now(Term.TypeLevel.Var.UserDefinedType(q, n, None)))
         def fields = fs
         def body = Nil
+
+  // Object ///////////////////////////////////////////////////////////////////
+  sealed abstract class Object[T] extends Symbol:
+    def nme: String
+    def tpe: Term.Type[T]
+    def body: List[Statement]
+
+  object Object:
+    def apply[T](
+      q: Option[Long],
+      n: String,
+      b: List[Statement],
+    ): Object[T] =
+      new Object[T]:
+        def nme = n
+        def tpe: Term.Type[T] = Cofree((), Eval.now(Term.TypeLevel.Var.UserDefinedType(q, n, None)))
+        def body: List[Statement] = b
 
   // Package //////////////////////////////////////////////////////////////////
   sealed abstract class Package extends Symbol
