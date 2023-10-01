@@ -15,7 +15,8 @@ A ***D**efinitional* ***C**ompiler* for generating Scala code.
 ### Usage
 
 ### `dc10-core`
-The `compile` package provides abstractions for defining and rendering code:
+The `compile` package provides abstractions for implementation by a downstream
+language library:
 
 <details><summary>Compiler</summary>
 
@@ -73,6 +74,9 @@ case class VirtualFile(path: Path, contents: String)
 The `io` package provides extension methods to write files using fs2:
 
 ```scala
+import dc10.io.toFile
+import dc10.scala.version.`3.3.1`
+
 _.toFile["scala-3.3.1"]
 ```
 

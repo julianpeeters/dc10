@@ -15,7 +15,8 @@ A ***D**efinitional* ***C**ompiler* for generating Scala code.
 ### Usage
 
 ### `dc10-core`
-The `compile` package provides abstractions for defining and rendering code:
+The `compile` package provides abstractions for implementation by a downstream
+language library:
 
 <details><summary>Compiler</summary>
 
