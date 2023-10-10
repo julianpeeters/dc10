@@ -13,7 +13,7 @@ A ***D**efinitional* ***C**ompiler* for generating Scala code.
  - Libraries for Scala 3 (JVM only)
 
 ```scala
-"com.julianpeeters" %% "dc10-<module>" % "0.2.0"
+"com.julianpeeters" %% "dc10-<module>" % "0.3.0"
 ```
 
 ### Usage
