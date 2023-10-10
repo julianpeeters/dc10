@@ -1,24 +1,25 @@
 # dc10
-A ***D**efinitional* ***C**ompiler* for generating Scala code.
- - [`dc10-core`](#dc10-core): Core models and abstractions for defining a language implementation
- - [`dc10-io`](#dc10-io): Fs2 integration for evaluating metaprograms into source files
- - <details><summary>see language implementations</summary>
+***D**efinitional* ***C**ompiler* tools
+ - [`dc10-core`](#dc10-core): core models and abstractions for defining a language implementation
+ - [`dc10-io`](#dc10-io): fs2 integration for evaluating metaprograms into source files
+
+
+<details><summary>examples</summary>
      
-    [`dc10-scala`](https://github.com/julianpeeters/dc10-scala): AST and dsl for defining and rendering Scala programs
+  - [`dc10-scala`](https://github.com/julianpeeters/dc10-scala): AST and dsl for defining and rendering Scala programs
 
-  </details>
+</details>
 
-
-### Getting Started
- - Libraries for Scala 3 (JVM only)
-
-```scala
-"com.julianpeeters" %% "dc10-<module>" % "0.3.0"
-```
-
-### Usage
+-----
 
 ### `dc10-core`
+ - Library for Scala 3 (JVM only)
+ - Bring your own AST
+
+```scala
+"com.julianpeeters" %% "dc10-core" % "0.3.0"
+```
+
 The `compile` package provides abstractions for implementation by a downstream
 language library:
 
@@ -75,11 +76,27 @@ case class VirtualFile(path: Path, contents: String)
 </details>
 
 ### `dc10-io`
-The `io` package provides extension methods to write files using fs2:
+ - Library for Scala 3 (JVM only)
+ - Bring your own AST, compiler, and renderer implementations
 
 ```scala
-import dc10.io.toFile
-import dc10.scala.version.`3.3.1`
-
-_.toFile["scala-3.3.1"]
+"com.julianpeeters" %% "dc10-io" % "0.3.0"
 ```
+The `io` package provides extension methods to write files using fs2:
+
+<details><summary>FileWriter</summary>
+
+```scala
+extension [
+  F[_]: Concurrent: Files,
+  G[_]: Foldable,
+  H[_],
+  E,
+  A,
+  B
+](res: G[H[B]])(using C: Compiler[G, H, E, A, B])
+  def toFile[V](using R: Renderer[V, E, H[A]]): F[List[Path]] =
+    C.toVirtualFile(res)
+      .foldMapM(e => e.traverse(s => FileWriter[F].writeFile(s)))
+```
+</details>
