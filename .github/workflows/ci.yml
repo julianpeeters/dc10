@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        scala: [3.3.1]
+        scala: [3.4.0]
         java: ['11', '17']
     runs-on: ${{ matrix.os }}
     steps:

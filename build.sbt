@@ -23,7 +23,7 @@ inThisBuild(List(
     "-Wunused:all",
     "-Wvalue-discard"
   ),
-  scalaVersion := "3.3.1",
+  scalaVersion := "3.4.0",
   versionScheme := Some("semver-spec"),
 ))
 
