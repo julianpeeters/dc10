@@ -2,7 +2,7 @@ package dc10.io
 
 import cats.effect.Concurrent
 import cats.Foldable
-import cats.implicits.*
+import cats.syntax.all.*
 import dc10.compile.{Compiler, Renderer}
 import fs2.io.file.{Files, Path}
 

@@ -13,7 +13,7 @@
 -----
 
 ### `dc10-core`
- - Library for Scala @SCALA@ (JVM only)
+ - Library for Scala @SCALA@ (JS, JVM, and Native platforms)
  - Bring your own AST
 
 ```scala

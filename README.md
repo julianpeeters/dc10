@@ -13,11 +13,11 @@
 -----
 
 ### `dc10-core`
- - Library for Scala 3 (JVM only)
+ - Library for Scala 3 (JS, JVM, and Native platforms)
  - Bring your own AST
 
 ```scala
-"com.julianpeeters" %% "dc10-core" % "0.3.0"
+"com.julianpeeters" %% "dc10-core" % "0.4.0"
 ```
 
 The `compile` package provides abstractions for implementation by a downstream
@@ -80,7 +80,7 @@ case class VirtualFile(path: Path, contents: String)
  - Bring your own AST, compiler, and renderer implementations
 
 ```scala
-"com.julianpeeters" %% "dc10-io" % "0.3.0"
+"com.julianpeeters" %% "dc10-io" % "0.4.0"
 ```
 The `io` package provides extension methods to write files using fs2:
 
