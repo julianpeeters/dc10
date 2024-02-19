@@ -1,4 +1,4 @@
-val Fs2V = "3.9.2"
+val Fs2V = "3.9.4"
 val SourcePosV = "1.1.0"
 
 inThisBuild(List(
@@ -27,32 +27,33 @@ inThisBuild(List(
   versionScheme := Some("semver-spec"),
 ))
 
-lazy val dc10 = (project in file("."))
+lazy val dc10 = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  .in(file("."))
   .settings(name := "dc10")
   .aggregate(`dc10-core`, `dc10-io`)
 
-lazy val `dc10-core` = (project in file("modules/core"))
-  .settings(
-    name := "dc10-core",
-  )
+lazy val `dc10-core` = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  .in(file("modules/core"))
+  .settings(name := "dc10-core")
 
-lazy val `dc10-io` = (project in file("modules/io"))
+lazy val `dc10-io` = crossProject(JVMPlatform)
+  .in(file("modules/io"))
   .dependsOn(`dc10-core`)
   .settings(
     name := "dc10-io",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-io" % Fs2V
+      "co.fs2" %%% "fs2-io" % Fs2V
     )
   )
 
 lazy val docs = project.in(file("docs/gitignored"))
   .settings(
-    mdocOut := dc10.base,
+    mdocOut := file("."),
     mdocVariables := Map(
       "SCALA" -> crossScalaVersions.value.map(e => e.takeWhile(_ != '.')).mkString(", "),
       "VERSION" -> version.value.takeWhile(_ != '+'),
     )
   )
-  .dependsOn(`dc10-core`, `dc10-io`)
+  .dependsOn(`dc10-core`.jvm, `dc10-io`.jvm)
   .enablePlugins(MdocPlugin)
   .enablePlugins(NoPublishPlugin)
