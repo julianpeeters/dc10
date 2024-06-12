@@ -1,5 +1,4 @@
-val Fs2V = "3.9.4"
-val SourcePosV = "1.1.0"
+val Fs2V = "3.10.2"
 
 inThisBuild(List(
   crossScalaVersions := Seq(scalaVersion.value),
@@ -23,7 +22,7 @@ inThisBuild(List(
     "-Wunused:all",
     "-Wvalue-discard"
   ),
-  scalaVersion := "3.4.0",
+  scalaVersion := "3.4.2",
   versionScheme := Some("semver-spec"),
 ))
 
