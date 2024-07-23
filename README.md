@@ -4,7 +4,7 @@
  - [`dc10-io`](#dc10-io): fs2 integration for evaluating metaprograms into source files
 
 
-<details><summary>examples</summary>
+#### Examples
      
   - [`dc10-scala`](https://github.com/julianpeeters/dc10-scala): AST and dsl for defining and rendering Scala programs
 
@@ -14,41 +14,50 @@
 
 ### `dc10-core`
  - Library for Scala 3 (JS, JVM, and Native platforms)
- - Bring your own AST
+ - Bring your own AST, implement a `Renderer`
 
 ```scala
 "com.julianpeeters" %% "dc10-core" % "0.4.0"
 ```
 
-The `compile` package provides abstractions for implementation by a downstream
-language library:
+The core lib provides a compiler implementation and a renderer for
+implementation by a downstream language library:
 
 <details><summary>Compiler</summary>
 
 ```scala
-package dc10.compile
+package dc10
+
+import cats.data.StateT
+import dc10.file.{File, VirtualFile}
 
 trait Compiler[
-  F[_],              // Error functor in ctx
-  G[_],              // Output unit, e.g., List, Id, etc.
-  E,                 // Error type
-  A,                 // Code level, representing symbols introduced into ctx
-  B                  // File level, representing source files with path and ast
+  C, // Code represention
+  D, // Lib dependency representation
+  E, // Error representation
 ]:
 
-  type Ctx[_[_],_,_] // Monadic context, to build up ASTs and then compile them
+  type Ctx[F[_], L, A] = StateT[F, L, A]            // Monadic ctx in which to build up a program
+  type Err[A]          = Either[List[E], A]         // Error functor in ctx
+  type Γ               = (Set[D], List[C])          // Code level log
+  type Δ               = (Set[D], List[File[G, C]]) // File level log
+  
+  extension [A] (ast: Ctx[Err, Γ, A])
+    @scala.annotation.targetName("compileCode")
+    def compile: Err[List[C]]
 
-  extension [C, D] (ast: Ctx[F, List[D], C])
-    def compile: F[List[D]]
+  extension [A] (ast: Ctx[Err, Δ, A])
+    @scala.annotation.targetName("compileFile")
+    def compile: Err[List[File[G, C]]]
 
-  extension (res: F[G[A]])
-    def toString[V](using R: Renderer[V, E, G[A]]): String
+  extension (res: Err[List[C]])
+    def toString[V](using R: Renderer[V, E, C]): String
 
-  extension (res: F[G[A]])
-    def toStringOrError[V](using R: Renderer[V, E, G[A]]): F[String]
+  extension (res: Err[List[C]])
+    def toStringOrError[V](using R: Renderer[V, E, C]): Err[String]
 
-  extension (res: F[G[B]])
-    def toVirtualFile[V](using R: Renderer[V, E, G[A]]): F[List[VirtualFile]]
+  extension (res: Err[List[File[G, C]]])
+    def toVirtualFile[V](using R: Renderer[V, E, C]): Err[List[VirtualFile]]
 ```
 </details>
 
@@ -64,12 +73,19 @@ trait Renderer[V, E, A]:
 ```
 </details>
 
-<details><summary>VirtualFile</summary>
+<details><summary>File</summary>
 
 ```scala
-package dc10.compile
+package dc10
 
 import java.nio.file.Path
+
+case class File[A](path: Path, contents: List[A])
+object File:
+
+  extension [A] (file: File[A])
+    def addParent(path: Path): File[A] =
+      file.copy(path = path.resolve(file.path))
 
 case class VirtualFile(path: Path, contents: String)
 ```
@@ -77,7 +93,7 @@ case class VirtualFile(path: Path, contents: String)
 
 ### `dc10-io`
  - Library for Scala 3 (JVM only)
- - Bring your own AST, compiler, and renderer implementations
+ - Bring your own AST, implement a `Renderer`
 
 ```scala
 "com.julianpeeters" %% "dc10-io" % "0.4.0"
@@ -87,15 +103,22 @@ The `io` package provides extension methods to write files using fs2:
 <details><summary>FileWriter</summary>
 
 ```scala
+package dc10.io
+
+import cats.effect.Concurrent
+import cats.syntax.all.given
+import dc10.compile.{Compiler, Renderer}
+import dc10.file.File
+import fs2.io.file.{Files, Path}
+
 extension [
   F[_]: Concurrent: Files,
-  G[_]: Foldable,
-  H[_],
+  G[_],
+  C,
+  D,
   E,
-  A,
-  B
-](res: G[H[B]])(using C: Compiler[G, H, E, A, B])
-  def toFile[V](using R: Renderer[V, E, H[A]]): F[List[Path]] =
+](res: Either[List[E], List[File[G, C]]])(using C: Compiler[G, C, D, E])
+  def toFile[V](using R: Renderer[V, E, List[C]]): F[List[Path]] =
     C.toVirtualFile(res)
       .foldMapM(e => e.traverse(s => FileWriter[F].writeFile(s)))
 ```

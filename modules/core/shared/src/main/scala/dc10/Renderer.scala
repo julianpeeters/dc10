@@ -1,6 +1,6 @@
-package dc10.compile
+package dc10
 
 trait Renderer[V, E, A]:
-  def render(input: A): String
+  def render(input: List[A]): String
   def renderErrors(errors: List[E]): String
   def version: V

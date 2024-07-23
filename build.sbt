@@ -1,4 +1,5 @@
 val Fs2V = "3.10.2"
+val CatsV = "2.12.0"
 
 inThisBuild(List(
   crossScalaVersions := Seq(scalaVersion.value),
@@ -20,7 +21,8 @@ inThisBuild(List(
     "-Werror",
     "-source:future",
     "-Wunused:all",
-    "-Wvalue-discard"
+    "-Wvalue-discard",
+    "-Ykind-projector:underscores"
   ),
   scalaVersion := "3.4.2",
   versionScheme := Some("semver-spec"),
@@ -33,7 +35,12 @@ lazy val dc10 = crossProject(JSPlatform, JVMPlatform, NativePlatform)
 
 lazy val `dc10-core` = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .in(file("modules/core"))
-  .settings(name := "dc10-core")
+  .settings(
+    name := "dc10-core",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % CatsV,
+    )  
+  )
 
 lazy val `dc10-io` = crossProject(JVMPlatform)
   .in(file("modules/io"))

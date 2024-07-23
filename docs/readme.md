@@ -4,7 +4,7 @@
  - [`dc10-io`](#dc10-io): fs2 integration for evaluating metaprograms into source files
 
 
-<details><summary>examples</summary>
+#### Examples
      
   - [`dc10-scala`](https://github.com/julianpeeters/dc10-scala): AST and dsl for defining and rendering Scala programs
 
@@ -14,89 +14,26 @@
 
 ### `dc10-core`
  - Library for Scala @SCALA@ (JS, JVM, and Native platforms)
- - Bring your own AST
+ - Bring your own AST, implement a `Renderer`, then compile to `String` or `File`
 
 ```scala
 "com.julianpeeters" %% "dc10-core" % "@VERSION@"
 ```
 
-The `compile` package provides abstractions for implementation by a downstream
-language library:
+The `dc10` package provides the following:
 
-<details><summary>Compiler</summary>
+1. A compiler implementation
+2. A file model, and a virtual file model
+3. A renderer interface (to be implemented by a downstream language library)
 
-```scala
-package dc10.compile
-
-trait Compiler[
-  F[_],              // Error functor in ctx
-  G[_],              // Output unit, e.g., List, Id, etc.
-  E,                 // Error type
-  A,                 // Code level, representing symbols introduced into ctx
-  B                  // File level, representing source files with path and ast
-]:
-
-  type Ctx[_[_],_,_] // Monadic context, to build up ASTs and then compile them
-
-  extension [C, D] (ast: Ctx[F, List[D], C])
-    def compile: F[List[D]]
-
-  extension (res: F[G[A]])
-    def toString[V](using R: Renderer[V, E, G[A]]): String
-
-  extension (res: F[G[A]])
-    def toStringOrError[V](using R: Renderer[V, E, G[A]]): F[String]
-
-  extension (res: F[G[B]])
-    def toVirtualFile[V](using R: Renderer[V, E, G[A]]): F[List[VirtualFile]]
-```
-</details>
-
-<details><summary>Renderer</summary>
-
-```scala
-package dc10.compile
-
-trait Renderer[V, E, A]:
-  def render(input: A): String
-  def renderErrors(errors: List[E]): String
-  def version: V
-```
-</details>
-
-<details><summary>VirtualFile</summary>
-
-```scala
-package dc10.compile
-
-import java.nio.file.Path
-
-case class VirtualFile(path: Path, contents: String)
-```
-</details>
 
 ### `dc10-io`
  - Library for Scala @SCALA@ (JVM only)
- - Bring your own AST, compiler, and renderer implementations
+ - Bring your own AST, implement a `Renderer`
 
 ```scala
 "com.julianpeeters" %% "dc10-io" % "@VERSION@"
 ```
-The `io` package provides extension methods to write files using fs2:
+The `io` package provides the following:
 
-<details><summary>FileWriter</summary>
-
-```scala
-extension [
-  F[_]: Concurrent: Files,
-  G[_]: Foldable,
-  H[_],
-  E,
-  A,
-  B
-](res: G[H[B]])(using C: Compiler[G, H, E, A, B])
-  def toFile[V](using R: Renderer[V, E, H[A]]): F[List[Path]] =
-    C.toVirtualFile(res)
-      .foldMapM(e => e.traverse(s => FileWriter[F].writeFile(s)))
-```
-</details>
+1. extension methods to write files using fs2 (provided)
