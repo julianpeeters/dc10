@@ -8,5 +8,5 @@ addSbtPlugin("org.scala-native"   % "sbt-scala-native"              % "0.5.5")
 addSbtPlugin("org.scalameta"      % "sbt-mdoc"                      % "2.6.1")
 
 // publish
-addSbtPlugin("com.github.sbt"     % "sbt-pgp"                       % "2.3.0")
+addSbtPlugin("com.github.sbt"     % "sbt-ci-release"                % "1.9.0")
 addSbtPlugin("org.typelevel"      % "sbt-typelevel-no-publish"      % "0.7.4")
