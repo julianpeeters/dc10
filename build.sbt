@@ -24,6 +24,7 @@ inThisBuild(List(
   ),
   scalaVersion := "3.5.2",
   versionScheme := Some("semver-spec"),
+  sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeCentralHost
 ))
 
 lazy val dc10 = crossProject(JSPlatform, JVMPlatform, NativePlatform)
