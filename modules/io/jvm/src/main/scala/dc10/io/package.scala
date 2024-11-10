@@ -5,9 +5,9 @@ import cats.syntax.all.given
 import dc10.{Compiler, File, Renderer}
 import fs2.io.file.{Files, Path}
 
-extension [F[_]: Concurrent: Files, C, D, E](
+extension [F[_]: Concurrent: Files, C, D, E, V](
   res: Either[List[E], List[File[C]]]
 )(using C: Compiler[C, D, E])
-  def toFile[V](using R: Renderer[V, E, C]): F[List[Path]] =
-    C.toVirtualFile(res)
-      .foldMapM(e => e.traverse(s => FileWriter[F].writeFile(s)))
+  def file(using R: Renderer[C, E, V]): F[List[Path]] =
+    C.virtualFile(res)
+      .foldMapM(l => l.traverse(f => FileWriter[F].writeFile(f)))

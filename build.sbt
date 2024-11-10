@@ -1,4 +1,4 @@
-val Fs2V = "3.10.2"
+val Fs2V = "3.11.0"
 val CatsV = "2.12.0"
 
 inThisBuild(List(
@@ -19,12 +19,10 @@ inThisBuild(List(
     "-deprecation",
     "-feature",
     "-Werror",
-    "-source:future",
     "-Wunused:all",
-    "-Wvalue-discard",
-    "-Ykind-projector:underscores"
+    "-Xkind-projector:underscores"
   ),
-  scalaVersion := "3.4.2",
+  scalaVersion := "3.5.2",
   versionScheme := Some("semver-spec"),
 ))
 

@@ -1,13 +1,11 @@
 package dc10
 
 import cats.data.StateT
-import cats.kernel.Monoid
-import cats.Monad
 
 trait Compiler[
-  C, // code represention
-  D, // lib dependency representation
-  E, // error representation
+  C, // Code statement representation
+  D, // Lib dependency representation
+  E, // Error message representation
 ]:
 
   type Ctx[F[_], L, A] = StateT[F, L, A]         // Monadic ctx in which to build up a program
@@ -23,14 +21,14 @@ trait Compiler[
     @scala.annotation.targetName("compileFile")
     def compile: Err[List[File[C]]]
 
-  extension (res: Err[List[C]])
-    def toString[V](using R: Renderer[V, E, C]): String
+  extension [V] (res: Err[List[C]])
+    def string(using R: Renderer[C, E, V]): String
 
-  extension (res: Err[List[C]])
-    def toStringOrError[V](using R: Renderer[V, E, C]): Err[String]
+  extension [V] (res: Err[List[C]])
+    def stringOrError(using R: Renderer[C, E, V]): Err[String]
 
-  extension (res: Err[List[File[C]]])
-    def toVirtualFile[V](using R: Renderer[V, E, C]): Err[List[VirtualFile]]
+  extension [V] (res: Err[List[File[C]]])
+    def virtualFile(using R: Renderer[C, E, V]): Err[List[VirtualFile]]
 
   extension (ctx: Γ)
     @scala.annotation.targetName("depΓ")
@@ -46,11 +44,7 @@ trait Compiler[
 
 object Compiler:
 
-  def impl[C, D, E](using
-    Monad[Either[List[E], _]],       // for Ctx monad
-    Monoid[(Set[D], List[C])],       // for Γ ctx-ext
-    Monoid[(Set[D], List[File[C]])], // for Δ ctx-ext
-  ): Compiler[C, D, E] =
+  def impl[C, D, E]: Compiler[C, D, E] =
     new  Compiler[C, D, E]:
 
       extension [A] (ast: Ctx[Err, Γ, A])
@@ -63,30 +57,27 @@ object Compiler:
         def compile: Err[List[File[C]]] =
           ast.runEmptyS.map(_._2)
 
-      extension (res: Err[List[C]])
-        def toString[V](
-          using R: Renderer[V, E, C]
+      extension [V] (res: Err[List[C]])
+        def string(
+          using R: Renderer[C, E, V]
         ): String =
           res.fold(R.renderErrors, R.render)
 
-      extension (res: Err[List[C]])
-        def toStringOrError[V](
-          using R: Renderer[V, E, C]
+      extension [V] (res: Err[List[C]])
+        def stringOrError(
+          using R: Renderer[C, E, V]
         ): Err[String] =
           res.map(R.render)
 
-      extension (res: Err[List[File[C]]])
-        def toVirtualFile[V](
-          using R: Renderer[V, E, C]
+      extension [V] (res: Err[List[File[C]]])
+        def virtualFile(
+          using R: Renderer[C, E, V]
         ): Err[List[VirtualFile]] =
           for
             fds <- res
           yield fds.map(f =>
-              VirtualFile(
-                f.path,
-                R.render(f.contents)
-              )
-            )
+            VirtualFile(f.path, R.render(f.contents))
+          )
 
       extension (ctx: Γ)
         @scala.annotation.targetName("depΓ")
