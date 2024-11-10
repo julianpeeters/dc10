@@ -2,6 +2,7 @@ val Fs2V = "3.11.0"
 val CatsV = "2.12.0"
 
 inThisBuild(List(
+  version := "0.5.0",
   crossScalaVersions := Seq(scalaVersion.value),
   description := "Code generation tools for Scala",
   organization := "com.julianpeeters",
@@ -24,12 +25,27 @@ inThisBuild(List(
   ),
   scalaVersion := "3.5.2",
   versionScheme := Some("semver-spec"),
-  sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeCentralHost
+  publishTo := Some(Opts.resolver.sonatypeStaging),
+  pomExtra := (
+    <scm>
+      <url>git://github.com/julianpeeters/dc10.git</url>
+      <connection>scm:git://github.com/julianpeeters/dc10.git</connection>
+    </scm>
+    <developers>
+      <developer>
+        <id>julianpeeters</id>
+        <name>Julian Peeters</name>
+        <url>http://github.com/julianpeeters</url>
+      </developer>
+    </developers>)
 ))
 
 lazy val dc10 = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .in(file("."))
-  .settings(name := "dc10")
+  .settings(
+    name := "dc10",
+    publish / skip := true
+  )
   .aggregate(`dc10-core`, `dc10-io`)
 
 lazy val `dc10-core` = crossProject(JSPlatform, JVMPlatform, NativePlatform)
