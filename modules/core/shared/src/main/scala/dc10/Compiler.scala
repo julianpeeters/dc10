@@ -28,12 +28,13 @@ trait Compiler[
     def stringOrError(using R: Renderer[C, E, V]): Err[String]
 
   extension [V] (res: Err[List[File[C]]])
-    def virtualFile(using R: Renderer[C, E, V]): Err[List[VirtualFile]]
+    def virtualFile(using R: Renderer[C, E, V]): Either[List[E], List[VirtualFile]]
 
   extension (ctx: Γ)
     @scala.annotation.targetName("depΓ")
     def dep(d: D): Err[Γ]
     def ext(s: C): Err[Γ]
+    def pop(e: E): Err[C]
     def namecheck(s: C): Err[C]
 
   extension (ctx: Δ)
@@ -85,6 +86,8 @@ object Compiler:
           Right((ctx._1 + d, ctx._2))
         def ext(s: C): Err[Γ] =
           namecheck(s).map(stmt => (ctx._1, ctx._2 :+ stmt))
+        def pop(e: E): Err[C] =
+          ctx._2.headOption.fold(Left(List(e)))(c => Right(c))
         def namecheck(s: C): Err[C] =
           // TODO
           Right(s)
