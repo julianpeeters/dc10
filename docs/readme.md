@@ -26,6 +26,7 @@ The `dc10` package provides the following:
 2. A file model, and a virtual file model
 3. A renderer interface (to be implemented by a downstream language library)
 
+(Example: [`dc10-scala`](https://github.com/julianpeeters/dc10-scala): AST and dsl for defining and rendering Scala programs)
 
 ### `dc10-io`
  - Library for Scala @SCALA@ (JVM only)
