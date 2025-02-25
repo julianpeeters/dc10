@@ -8,10 +8,10 @@ trait Compiler[
   E, // Error message representation
 ]:
 
-  type Ctx[F[_], L, A] = StateT[F, L, A]         // Monadic ctx in which to build up a program
-  type Err[A]          = Either[List[E], A]      // Error functor in ctx
-  type Γ               = (Set[D], List[C])       // Code level log
-  type Δ               = (Set[D], List[File[C]]) // File level log
+  type Ctx[F[_], L, A] = StateT[F, L, A]           // Monadic ctx in which to build up a program
+  type Err[A]          = Either[List[E], A]        // Error functor in ctx
+  type Γ               = (Set[D], List[C])         // Code level log
+  type Δ               = (Set[D], List[Source[C]]) // File level log
   
   extension [A] (ast: Ctx[Err, Γ, A])
     @scala.annotation.targetName("compileCode")
@@ -19,7 +19,7 @@ trait Compiler[
 
   extension [A] (ast: Ctx[Err, Δ, A])
     @scala.annotation.targetName("compileFile")
-    def compile: Err[List[File[C]]]
+    def compile: Err[List[Source[C]]]
 
   extension [V] (res: Err[List[C]])
     def string(using R: Renderer[C, E, V]): String
@@ -27,7 +27,7 @@ trait Compiler[
   extension [V] (res: Err[List[C]])
     def stringOrError(using R: Renderer[C, E, V]): Err[String]
 
-  extension [V] (res: Err[List[File[C]]])
+  extension [V] (res: Err[List[Source[C]]])
     def virtualFile(using R: Renderer[C, E, V]): Either[List[E], List[VirtualFile]]
 
   extension (ctx: Γ)
@@ -39,8 +39,8 @@ trait Compiler[
   extension (ctx: Δ)
     @scala.annotation.targetName("depΔ")
     def dep(d: D): Err[Δ]
-    def ext(s: File[C]): Err[Δ]
-    def namecheck(s: File[C]): Err[File[C]]
+    def ext(s: Source[C]): Err[Δ]
+    def namecheck(s: Source[C]): Err[Source[C]]
 
 object Compiler:
 
@@ -54,7 +54,7 @@ object Compiler:
 
       extension [A] (ast: Ctx[Err, Δ, A])
         @scala.annotation.targetName("compileFile")
-        def compile: Err[List[File[C]]] =
+        def compile: Err[List[Source[C]]] =
           ast.runEmptyS.map(_._2)
 
       extension [V] (res: Err[List[C]])
@@ -69,7 +69,7 @@ object Compiler:
         ): Err[String] =
           res.map(R.render)
 
-      extension [V] (res: Err[List[File[C]]])
+      extension [V] (res: Err[List[Source[C]]])
         def virtualFile(
           using R: Renderer[C, E, V]
         ): Err[List[VirtualFile]] =
@@ -93,8 +93,8 @@ object Compiler:
         @scala.annotation.targetName("depΔ")
         def dep(d: D): Err[Δ] =
           Right((ctx._1 + d, ctx._2))
-        def ext(s: File[C]): Err[Δ] =
+        def ext(s: Source[C]): Err[Δ] =
           namecheck(s).map(stmt => (ctx._1, ctx._2 :+ stmt))
-        def namecheck(s: File[C]): Err[File[C]] =
+        def namecheck(s: Source[C]): Err[Source[C]] =
           // TODO
           Right(s)
