@@ -20,13 +20,13 @@ trait Compiler[F[_], A]:
     def compile: Err[List[SourceFile[F, A]]]
 
   extension [V] (res: Err[F[A]])
-    def string(using R: Renderer[F, A, V]): String
+    def string(using R: Renderer[F, V, A]): String
 
   extension [V] (res: Err[F[A]])
-    def stringOrError(using R: Renderer[F, A, V]): Err[String]
+    def stringOrError(using R: Renderer[F, V, A]): Err[String]
 
   extension [V] (res: Err[List[SourceFile[F, A]]])
-    def virtualFile(using R: Renderer[F, A, V]): Either[List[Error], List[VirtualFile]]
+    def virtualFile(using R: Renderer[F, V, A]): Either[List[Error], List[VirtualFile]]
 
   extension (ctx: Γ)
     @scala.annotation.targetName("depΓ")
@@ -59,15 +59,15 @@ object Compiler:
           ast.runEmptyS.map(_._2)
 
       extension [V] (res: Err[F[A]])
-        def string(using R: Renderer[F, A, V]): String =
+        def string(using R: Renderer[F, V, A]): String =
           res.fold(R.renderErrors, R.render)
 
       extension [V] (res: Err[F[A]])
-        def stringOrError(using R: Renderer[F, A, V]): Err[String] =
+        def stringOrError(using R: Renderer[F, V, A]): Err[String] =
           res.map(R.render)
 
       extension [V] (res: Err[List[SourceFile[F, A]]])
-        def virtualFile(using R: Renderer[F, A, V]): Err[List[VirtualFile]] =
+        def virtualFile(using R: Renderer[F, V, A]): Err[List[VirtualFile]] =
           for
             fds <- res
           yield fds.map(f =>
