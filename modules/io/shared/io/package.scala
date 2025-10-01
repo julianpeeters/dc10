@@ -13,7 +13,7 @@ extension [
 ](
   res: Either[List[Error], List[SourceFile[G, A]]]
 )(using C: Compiler[G, A])
-  def file[V](using R: Renderer[G, A, V]): F[List[Path]] =
+  def file[V](using R: Renderer[G, V, A]): F[List[Path]] =
     C.virtualFile(res).fold(
       es => Concurrent[F].raiseError(new Throwable(es.mkString("\n"))),
       l => l.traverse(f => FileWriter[F].writeFile(f))
