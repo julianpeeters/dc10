@@ -28,6 +28,7 @@ lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .in(file("."))
   .settings(
     name := "dc10",
+    publish / skip := true
   )
   .aggregate(dc10, io)
 
