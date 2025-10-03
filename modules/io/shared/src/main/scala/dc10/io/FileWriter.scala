@@ -2,7 +2,7 @@ package dc10.io
 
 import cats.effect.Concurrent
 import cats.syntax.all.*
-import dc10.VirtualFile
+import dc10.file.VirtualFile
 import fs2.{Stream, text}
 import fs2.io.file.{Files, Path}
 
@@ -14,9 +14,8 @@ object FileWriter:
     new FileWriter[F]:
       def writeFile(vf: VirtualFile): F[Path] =
         for
-          d <- Concurrent[F].pure(Path.fromNioPath(vf.path.getParent()))
-          _ <- Files[F].createDirectories(d)
-          p <- Concurrent[F].pure(Path.fromNioPath(vf.path))
+          p <- Concurrent[F].pure(vf.path)
+          _ <- vf.path.parent.fold(Concurrent[F].unit)(d => Files[F].createDirectories(d))
           _ <- Stream(vf.contents)
               .through(text.utf8.encode)
               .through(Files[F].writeAll(p))
