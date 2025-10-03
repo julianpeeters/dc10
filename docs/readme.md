@@ -17,7 +17,7 @@
  - Bring your own AST, implement a `Renderer`, then compile to `String` or `File`
 
 ```scala
-"com.julianpeeters" %% "dc10-core" % "@VERSION@"
+"com.julianpeeters" %% "dc10" % "@VERSION@"
 ```
 
 The `dc10` package provides the following:

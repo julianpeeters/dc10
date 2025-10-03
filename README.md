@@ -17,7 +17,7 @@
  - Bring your own AST, implement a `Renderer`, then compile to `String` or `File`
 
 ```scala
-"com.julianpeeters" %% "dc10-core" % "0.6.0"
+"com.julianpeeters" %% "dc10" % "0.7.0"
 ```
 
 The `dc10` package provides the following:
@@ -33,7 +33,7 @@ The `dc10` package provides the following:
  - Bring your own AST, implement a `Renderer`
 
 ```scala
-"com.julianpeeters" %% "dc10-io" % "0.6.0"
+"com.julianpeeters" %% "dc10-io" % "0.7.0"
 ```
 The `io` package provides the following:
 
