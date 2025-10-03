@@ -1,6 +1,6 @@
 # dc10
 ***D**efinitional* ***C**ompiler* tools
- - [`dc10-core`](#dc10-core): core models and abstractions for defining a language implementation
+ - [`dc10`](#dc10): core models and abstractions for defining a language implementation
  - [`dc10-io`](#dc10-io): fs2 integration for evaluating metaprograms into source files
 
 
@@ -12,7 +12,7 @@
 
 -----
 
-### `dc10-core`
+### `dc10`
  - Library for Scala 3 (JS, JVM, and Native platforms)
  - Bring your own AST, implement a `Renderer`, then compile to `String` or `File`
 
